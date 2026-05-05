@@ -56,7 +56,10 @@ import {
   Info,
   Scale,
   Sun,
-  Moon
+  Moon,
+  Combine,
+  Stamp,
+  Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PDFDocument, degrees, rgb, StandardFonts, PageSizes } from 'pdf-lib';
@@ -345,16 +348,17 @@ const LandingPage = () => {
 const ToolsPage = () => {
   const navigate = useNavigate();
   const tools = [
-    { id: 'image-to-pdf', name: "Image to PDF", icon: <ImageIcon className="w-6 h-6 mb-3" />, desc: "Convert photos to PDF" },
-    { id: 'merge', name: "Merge PDF", icon: <FilePlus2 className="w-6 h-6 mb-3" />, desc: "Combine multiple files" },
-    { id: 'split', name: "Split PDF", icon: <Scissors className="w-6 h-6 mb-3" />, desc: "Extract specific pages" },
-    { id: 'compress', name: "Compress PDF", icon: <Minimize2 className="w-6 h-6 mb-3" />, desc: "Reduce file size" },
-    { id: 'rotate', name: "Rotate PDF", icon: <RotateCw className="w-6 h-6 mb-3" />, desc: "Fix orientation issues" },
-    { id: 'protect', name: "Protect PDF", icon: <Lock className="w-6 h-6 mb-3" />, desc: "Add/Remove passwords" },
-    { id: 'watermark', name: "Watermark PDF", icon: <Type className="w-6 h-6 mb-3" />, desc: "Brand your documents" },
-    { id: 'page-numbers', name: "Page Numbers", icon: <Hash className="w-6 h-6 mb-3" />, desc: "Insert numbering" },
-    { id: 'pdf-to-image', name: "PDF to Image", icon: <FileImage className="w-6 h-6 mb-3" />, desc: "Export pages as photos" },
-  ];
+  { id: 'image-to-pdf', name: "Image to PDF", icon: <ImageIcon className="w-6 h-6" />, desc: "Convert images to PDF", path: "/tools/image-to-pdf" },
+  { id: 'merge', name: "Merge PDF", icon: <Combine className="w-6 h-6" />, desc: "Combine multiple PDFs", path: "/tools/merge" },
+  { id: 'split', name: "Split PDF", icon: <Scissors className="w-6 h-6" />, desc: "Extract specific pages", path: "/tools/split" },
+  { id: 'rotate', name: "Rotate PDF", icon: <RotateCw className="w-6 h-6" />, desc: "Rotate PDF pages", path: "/tools/rotate" },
+  { id: 'compress', name: "Compress PDF", icon: <Minimize2 className="w-6 h-6" />, desc: "Reduce file size", path: "/tools/compress" },
+  { id: 'metadata', name: "Edit Metadata", icon: <FileText className="w-6 h-6" />, desc: "Edit PDF properties", path: "/tools/metadata" },
+  { id: 'protect', name: "Protect PDF", icon: <Lock className="w-6 h-6" />, desc: "Password protect PDF", path: "/tools/protect" },
+  { id: 'watermark', name: "Watermark", icon: <Stamp className="w-6 h-6" />, desc: "Add text or image", path: "/tools/watermark" },
+  { id: 'page-numbers', name: "Page Numbers", icon: <Hash className="w-6 h-6" />, desc: "Add page numbering", path: "/tools/page-numbers" },
+  { id: 'pdf-to-image', name: "PDF to Image", icon: <FileImage className="w-6 h-6" />, desc: "Export PDF as images", path: "/tools/pdf-to-image" },
+];
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-6xl mx-auto px-6 w-full py-20">
@@ -364,7 +368,7 @@ const ToolsPage = () => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {tools.map((tool) => (
-          <div key={tool.id} onClick={() => navigate(`/tools/${tool.id}`)} className="group bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 p-8 rounded-2xl shadow-sm hover:shadow-lg dark:hover:border-slate-700 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between h-52">
+          <div key={tool.id} onClick={() => navigate(tool.path)} className="group bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 p-8 rounded-2xl shadow-sm hover:shadow-lg dark:hover:border-slate-700 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between h-52">
             <div className="text-gray-600 dark:text-slate-400 group-hover:text-accent dark:group-hover:text-accent transition-colors duration-300">{tool.icon}</div>
             <div>
               <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-1">{tool.name}</h3>
@@ -830,44 +834,156 @@ const CompressPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-10 text-center">
-        <button onClick={() => navigate('/tools')} className="flex items-center gap-1 text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white mb-4 mx-auto">
-          <ChevronLeft size={16} /> Back to Tools
-        </button>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Compress PDF</h1>
-        <p className="text-gray-500 dark:text-slate-400 text-sm">Reduce file size without losing quality</p>
+      <div className="mb-12">
+        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Optimization</div>
+        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Compress PDF</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Reduce file size without losing quality</p>
       </div>
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
           <div className="text-center py-6">
             <CheckCircle2 size={48} className="text-green-500 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold mb-2">Compression Complete!</h2>
-            <p className="text-gray-500 mb-8">Reduced by <span className="text-accent font-bold">{reduction}%</span></p>
-            <div className="flex flex-col gap-3 max-w-xs mx-auto">
-              <a href={resultUrl} download="compressed.pdf" className="bg-accent text-white py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
-              <button onClick={clear} className="py-3 text-gray-500">Compress another PDF</button>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Compression Complete!</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Reduced by <span className="text-accent font-bold">{reduction}%</span></p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href={resultUrl} download="compressed.pdf" className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
+              <button onClick={clear} className="bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-8 py-3 rounded-xl font-bold transition-all">Compress Another</button>
             </div>
           </div>
         ) : (
           <div className="space-y-8">
-            <FileUpload files={files} onFilesChange={setFiles} accept=".pdf" multiple={false} label="PDF file" icon={Minimize2} />
+            <FileUpload onFilesChange={setFiles} files={files} label="PDF file" />
             {files.length > 0 && (
-              <div className="space-y-6 pt-4 border-t border-gray-100">
+              <div className="space-y-6 pt-4 border-t border-gray-50 dark:border-slate-800">
                 <div className="grid grid-cols-1 gap-3">
-                  {[{ id: 'low', n: 'Low', s: 'Structural', f: '1-5%' }, { id: 'medium', n: 'Medium', s: 'Recommended', f: '10-20%' }, { id: 'high', n: 'High', s: 'Deep image-based', f: '50-80%' }].map(l => (
-                    <button key={l.id} onClick={() => setLevel(l.id)} className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${level === l.id ? 'border-accent bg-accent/5' : 'border-gray-100 bg-gray-50 hover:border-gray-200'}`}>
-                      <div className="text-left"><div className={`font-bold ${level === l.id ? 'text-accent' : 'text-gray-900'}`}>{l.n}</div><div className="text-xs text-gray-500">{l.s}</div></div>
-                      <div className={`text-sm font-bold ${level === l.id ? 'text-accent' : 'text-gray-400'}`}>~{l.f}</div>
+                  {[{ id: 'low', n: 'Low', s: 'Structural only', f: '1-5%' }, { id: 'medium', n: 'Medium', s: 'Recommended', f: '10-20%' }, { id: 'high', n: 'High', s: 'Deep image-based', f: '50-80%' }].map(l => (
+                    <button key={l.id} onClick={() => setLevel(l.id)} className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${level === l.id ? 'border-accent bg-accent/5' : 'border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 hover:border-gray-200 dark:hover:border-slate-700'}`}>
+                      <div className="text-left"><div className={`font-bold ${level === l.id ? 'text-accent' : 'text-slate-900 dark:text-white'}`}>{l.n}</div><div className="text-xs text-slate-500 dark:text-slate-500">{l.s}</div></div>
+                      <div className={`text-sm font-bold ${level === l.id ? 'text-accent' : 'text-slate-400 dark:text-slate-600'}`}>~{l.f}</div>
                     </button>
                   ))}
                 </div>
-                {level === 'high' && <div className="bg-orange-50 p-3 rounded-xl flex gap-3 text-[10px] text-orange-700 leading-normal"><AlertCircle size={18} /> High mode uses image-based rendering. Text will be legible but not selectable.</div>}
-                <button onClick={handleCompress} disabled={status === 'loading'} className="w-full py-4 bg-accent text-white rounded-xl font-bold shadow-lg hover:bg-accent-hover transition-all flex items-center justify-center gap-2">
-                  {status === 'loading' ? 'Processing...' : 'Compress PDF'}
+                {level === 'high' && <div className="bg-orange-50 dark:bg-orange-900/10 p-3 rounded-xl flex gap-3 text-[10px] text-orange-700 dark:text-orange-400 leading-normal font-medium border border-orange-100 dark:border-orange-900/20"><AlertCircle size={18} /> High mode uses image-based rendering. Text will be legible but not selectable.</div>}
+                <button
+                  onClick={handleCompress}
+                  disabled={status === 'loading' || files.length === 0}
+                  className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${status === 'loading' || files.length === 0 ? 'bg-gray-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/20 active:scale-[0.98]'}`}
+                >
+                  {status === 'loading' ? <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div> : <><Minimize2 size={20} /> Compress PDF</>}
                 </button>
               </div>
             )}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+const MetadataEditorTool = () => {
+  const navigate = useNavigate();
+  const [files, setFiles] = useState([]);
+  const [metadata, setMetadata] = useState({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' });
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState('');
+  const [resultUrl, setResultUrl] = useState(null);
+
+  useEffect(() => {
+    if (files.length > 0) loadMetadata();
+  }, [files]);
+
+  const loadMetadata = async () => {
+    try {
+      const arrayBuffer = await files[0].file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      setMetadata({
+        title: pdfDoc.getTitle() || '',
+        author: pdfDoc.getAuthor() || '',
+        subject: pdfDoc.getSubject() || '',
+        keywords: pdfDoc.getKeywords() || '',
+        creator: pdfDoc.getCreator() || '',
+        producer: pdfDoc.getProducer() || '',
+      });
+    } catch (err) { setError('Failed to load PDF metadata'); }
+  };
+
+  const handleAction = async () => {
+    if (files.length === 0) return;
+    setStatus('loading'); setError('');
+    try {
+      const arrayBuffer = await files[0].file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      pdfDoc.setTitle(metadata.title);
+      pdfDoc.setAuthor(metadata.author);
+      pdfDoc.setSubject(metadata.subject);
+      pdfDoc.setKeywords(metadata.keywords.split(',').map(k => k.trim()));
+      pdfDoc.setCreator(metadata.creator);
+      pdfDoc.setProducer(metadata.producer);
+      
+      const pdfBytes = await pdfDoc.save();
+      setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
+      setStatus('success');
+    } catch (err) { setError('Operation failed'); setStatus('error'); }
+  };
+
+  const clear = () => { setFiles([]); setMetadata({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' }); setStatus('idle'); setError(''); setResultUrl(null); };
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
+      <div className="mb-12">
+        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Properties</div>
+        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Edit Metadata</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Modify document properties like title, author, and keywords</p>
+      </div>
+
+      <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
+        {status === 'success' ? (
+          <div className="text-center py-8">
+            <CheckCircle2 size={48} className="text-green-500 mx-auto mb-6" />
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Metadata Updated!</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Your document properties have been successfully modified.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href={resultUrl} download="updated_metadata.pdf" className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
+              <button onClick={clear} className="bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-8 py-3 rounded-xl font-bold transition-all">Edit Another</button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            <FileUpload onFilesChange={setFiles} files={files} label="PDF file" />
+            
+            {files.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 gap-4 p-4 bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-100 dark:border-slate-800">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Title</label>
+                    <input type="text" value={metadata.title} onChange={e => setMetadata({...metadata, title: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. Annual Report" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Author</label>
+                    <input type="text" value={metadata.author} onChange={e => setMetadata({...metadata, author: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. John Doe" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Subject</label>
+                  <input type="text" value={metadata.subject} onChange={e => setMetadata({...metadata, subject: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. Financial Data" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Keywords (comma separated)</label>
+                  <input type="text" value={metadata.keywords} onChange={e => setMetadata({...metadata, keywords: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. report, stats, 2025" />
+                </div>
+              </motion.div>
+            )}
+
+            {error && <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium border border-red-100 dark:border-red-900/30 flex items-center gap-2"><AlertCircle size={18} /> {error}</div>}
+
+            <button
+              onClick={handleAction}
+              disabled={status === 'loading' || files.length === 0}
+              className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${status === 'loading' || files.length === 0 ? 'bg-gray-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/20 active:scale-[0.98]'}`}
+            >
+              {status === 'loading' ? <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div> : <><Save size={20} /> Update Metadata</>}
+            </button>
           </div>
         )}
       </div>
@@ -941,40 +1057,51 @@ const ProtectPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-10 text-center">
-        <button onClick={() => navigate('/tools')} className="flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-900 mb-4 mx-auto">
-          <ChevronLeft size={16} /> Back to Tools
-        </button>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Protect PDF</h1>
-        <p className="text-gray-500 text-sm">Add or remove password protection</p>
+      <div className="mb-12">
+        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Security</div>
+        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Protect PDF</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Add or remove password protection</p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm">
+      <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
           <div className="text-center py-8">
             <CheckCircle2 size={48} className="text-green-500 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold mb-8">Success!</h2>
-            <div className="flex flex-col gap-3 max-w-xs mx-auto">
-              <a href={resultUrl} download="secure.pdf" className="bg-accent text-white py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
-              <button onClick={clear} className="py-3 text-gray-500">Secure another PDF</button>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Success!</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Your document has been secured.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href={resultUrl} download="secure.pdf" className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
+              <button onClick={clear} className="bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-8 py-3 rounded-xl font-bold transition-all">Secure Another</button>
             </div>
           </div>
         ) : (
           <div className="space-y-8">
-            <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
-              <button onClick={() => setMode('protect')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all ${mode === 'protect' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}>Protect</button>
-              <button onClick={() => setMode('unlock')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all ${mode === 'unlock' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}>Unlock</button>
+            <div className="flex gap-1 bg-gray-100 dark:bg-slate-900 p-1 rounded-xl">
+              <button onClick={() => setMode('protect')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all ${mode === 'protect' ? 'bg-white dark:bg-slate-800 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500'}`}>Protect</button>
+              <button onClick={() => setMode('unlock')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all ${mode === 'unlock' ? 'bg-white dark:bg-slate-800 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500'}`}>Unlock</button>
             </div>
             <FileUpload files={files} onFilesChange={setFiles} accept=".pdf" multiple={false} label="PDF file" icon={Lock} />
             {files.length > 0 && (
-              <div className="space-y-6 pt-4 border-t border-gray-100">
+              <div className="space-y-6 pt-4 border-t border-gray-100 dark:border-slate-800">
                 <div className="space-y-4">
-                  <div><label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">Password</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-accent transition-all" /></div>
-                  {mode === 'protect' && <div><label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">Confirm Password</label><input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-accent transition-all" /></div>}
+                  <div>
+                    <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest mb-2 px-1">Password</label>
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent transition-all dark:text-white" />
+                  </div>
+                  {mode === 'protect' && (
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest mb-2 px-1">Confirm Password</label>
+                      <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent transition-all dark:text-white" />
+                    </div>
+                  )}
                 </div>
-                {error && <div className="text-xs text-red-500 font-bold px-1 py-2 bg-red-50 rounded-lg flex items-center gap-2"><AlertCircle size={14} /> {error}</div>}
-                <button onClick={handleAction} disabled={status === 'loading' || !password} className="w-full py-4 bg-accent text-white rounded-xl font-bold shadow-lg hover:bg-accent-hover transition-all">
-                  {status === 'loading' ? 'Processing...' : (mode === 'protect' ? 'Protect PDF' : 'Unlock PDF')}
+                {error && <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium border border-red-100 dark:border-red-900/30 flex items-center gap-2"><AlertCircle size={18} /> {error}</div>}
+                <button
+                  onClick={handleAction}
+                  disabled={status === 'loading' || !password}
+                  className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${status === 'loading' || !password ? 'bg-gray-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/20 active:scale-[0.98]'}`}
+                >
+                  {status === 'loading' ? <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div> : (mode === 'protect' ? 'Protect PDF' : 'Unlock PDF')}
                 </button>
               </div>
             )}
@@ -1028,53 +1155,73 @@ const WatermarkPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-10 text-center">
-        <button onClick={() => navigate('/tools')} className="flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-900 mb-4 mx-auto">
-          <ChevronLeft size={16} /> Back to Tools
-        </button>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Watermark PDF</h1>
-        <p className="text-gray-500 text-sm">Brand your documents with text or images</p>
+      <div className="mb-12">
+        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Branding</div>
+        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Watermark PDF</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Add custom text or image watermarks to your document</p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm">
+      <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
           <div className="text-center py-8">
             <CheckCircle2 size={48} className="text-green-500 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold mb-8">Watermark Applied!</h2>
-            <div className="flex flex-col gap-3 max-w-xs mx-auto">
-              <a href={resultUrl} download="watermarked.pdf" className="bg-accent text-white py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
-              <button onClick={clear} className="py-3 text-gray-500">Watermark another PDF</button>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Watermark Applied!</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Your document has been branded successfully.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href={resultUrl} download="watermarked.pdf" className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
+              <button onClick={clear} className="bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-8 py-3 rounded-xl font-bold transition-all">Watermark Another</button>
             </div>
           </div>
         ) : (
           <div className="space-y-8">
-            <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
-              <button onClick={() => setType('text')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all ${type === 'text' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}>Text</button>
-              <button onClick={() => setType('image')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all ${type === 'image' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}>Image</button>
+            <div className="flex gap-1 bg-gray-100 dark:bg-slate-900 p-1 rounded-xl">
+              <button onClick={() => setType('text')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all ${type === 'text' ? 'bg-white dark:bg-slate-800 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500'}`}>Text</button>
+              <button onClick={() => setType('image')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all ${type === 'image' ? 'bg-white dark:bg-slate-800 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500'}`}>Image</button>
             </div>
             <FileUpload files={files} onFilesChange={setFiles} accept=".pdf" multiple={false} label="PDF file" icon={Type} />
             {files.length > 0 && (
-              <div className="space-y-6 pt-4 border-t border-gray-100">
+              <div className="space-y-6 pt-4 border-t border-gray-100 dark:border-slate-800">
                 {type === 'text' ? (
                   <div className="space-y-4">
-                    <input type="text" value={wmText} onChange={(e) => setWmText(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-accent" />
+                    <input type="text" value={wmText} onChange={(e) => setWmText(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent dark:text-white" placeholder="Watermark text" />
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1"><label className="text-[10px] font-bold text-gray-400 uppercase">Size: {fontSize}px</label><input type="range" min="10" max="200" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none accent-accent" /></div>
-                      <div className="space-y-1"><label className="text-[10px] font-bold text-gray-400 uppercase">Color</label><input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-full h-10 p-1 bg-white border border-gray-200 rounded-lg" /></div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Size: {fontSize}px</label>
+                        <input type="range" min="10" max="200" value={fontSize} onChange={(e) => setFontSize(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-100 dark:bg-slate-800 rounded-lg appearance-none accent-accent cursor-pointer" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Color</label>
+                        <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="w-full h-10 p-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-lg cursor-pointer" />
+                      </div>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <input type="file" accept="image/*" onChange={onImageChange} className="w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:bg-accent/10 file:text-accent file:border-0" />
-                    <div className="space-y-1"><label className="text-[10px] font-bold text-gray-400 uppercase">Scale: {Math.round(imageScale * 100)}%</label><input type="range" min="0.1" max="2" step="0.1" value={imageScale} onChange={(e) => setImageScale(parseFloat(e.target.value))} className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none accent-accent" /></div>
+                    <div className="p-4 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl">
+                      <input type="file" accept="image/*" onChange={onImageChange} className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:bg-accent/10 file:text-accent file:border-0 file:font-bold file:cursor-pointer" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Scale: {Math.round(imageScale * 100)}%</label>
+                      <input type="range" min="0.1" max="2" step="0.1" value={imageScale} onChange={(e) => setImageScale(parseFloat(e.target.value))} className="w-full h-1.5 bg-gray-100 dark:bg-slate-800 rounded-lg appearance-none accent-accent cursor-pointer" />
+                    </div>
                   </div>
                 )}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1"><label className="text-[10px] font-bold text-gray-400 uppercase">Opacity: {Math.round(opacity * 100)}%</label><input type="range" min="0.1" max="1" step="0.1" value={opacity} onChange={(e) => setOpacity(parseFloat(e.target.value))} className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none accent-accent" /></div>
-                  <div className="space-y-1"><label className="text-[10px] font-bold text-gray-400 uppercase">Rotate: {rotation}°</label><input type="range" min="-180" max="180" step="15" value={rotation} onChange={(e) => setRotation(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none accent-accent" /></div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Opacity: {Math.round(opacity * 100)}%</label>
+                    <input type="range" min="0.1" max="1" step="0.1" value={opacity} onChange={(e) => setOpacity(parseFloat(e.target.value))} className="w-full h-1.5 bg-gray-100 dark:bg-slate-800 rounded-lg appearance-none accent-accent cursor-pointer" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Rotate: {rotation}°</label>
+                    <input type="range" min="-180" max="180" step="15" value={rotation} onChange={(e) => setRotation(parseInt(e.target.value))} className="w-full h-1.5 bg-gray-100 dark:bg-slate-800 rounded-lg appearance-none accent-accent cursor-pointer" />
+                  </div>
                 </div>
-                <button onClick={handleApply} disabled={status === 'loading' || (type === 'image' && !wmImage)} className="w-full py-4 bg-accent text-white rounded-xl font-bold shadow-lg hover:bg-accent-hover transition-all">
-                  {status === 'loading' ? 'Applying...' : 'Apply Watermark'}
+                <button
+                  onClick={handleApply}
+                  disabled={status === 'loading' || (type === 'image' && !wmImage)}
+                  className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${status === 'loading' || (type === 'image' && !wmImage) ? 'bg-gray-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/20 active:scale-[0.98]'}`}
+                >
+                  {status === 'loading' ? <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div> : 'Apply Watermark'}
                 </button>
               </div>
             )}
@@ -1121,49 +1268,52 @@ const PageNumbersPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-10 text-center">
-        <button onClick={() => navigate('/tools')} className="flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-900 mb-4 mx-auto">
-          <ChevronLeft size={16} /> Back to Tools
-        </button>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Page Numbers</h1>
-        <p className="text-gray-500 text-sm">Insert page numbering into your PDF</p>
+      <div className="mb-12">
+        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Navigation</div>
+        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Page Numbers</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Add automatic page numbering to your PDF</p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm">
+      <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
           <div className="text-center py-8">
             <CheckCircle2 size={48} className="text-green-500 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold mb-8">Numbers Added!</h2>
-            <div className="flex flex-col gap-3 max-w-xs mx-auto">
-              <a href={resultUrl} download="numbered.pdf" className="bg-accent text-white py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
-              <button onClick={clear} className="py-3 text-gray-500">Number another PDF</button>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Numbers Added!</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Your document has been numbered correctly.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href={resultUrl} download="numbered.pdf" className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
+              <button onClick={clear} className="bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-8 py-3 rounded-xl font-bold transition-all">Number Another</button>
             </div>
           </div>
         ) : (
           <div className="space-y-8">
             <FileUpload files={files} onFilesChange={setFiles} accept=".pdf" multiple={false} label="PDF file" icon={Hash} />
             {files.length > 0 && (
-              <div className="space-y-6 pt-4 border-t border-gray-100">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Format</label>
+              <div className="space-y-8 pt-4 border-t border-gray-100 dark:border-slate-800">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Format</label>
                     <div className="flex flex-col gap-2">
                       {['1', 'Page 1', '1 / N'].map(f => (
-                        <button key={f} onClick={() => setFormat(f)} className={`py-2 text-xs font-bold rounded-lg border-2 transition-all ${format === f ? 'border-accent bg-accent/5 text-accent' : 'border-gray-100 bg-gray-50 text-gray-500'}`}>{f}</button>
+                        <button key={f} onClick={() => setFormat(f)} className={`py-3 text-sm font-bold rounded-xl border-2 transition-all ${format === f ? 'border-accent bg-accent/5 text-accent' : 'border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 text-slate-500 hover:border-gray-200 dark:hover:border-slate-700'}`}>{f}</button>
                       ))}
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Position</label>
-                    <div className="grid grid-cols-3 gap-1 bg-gray-100 p-1 rounded-xl">
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Position</label>
+                    <div className="grid grid-cols-3 gap-2 bg-gray-100 dark:bg-slate-900 p-2 rounded-xl border border-gray-200 dark:border-slate-800">
                       {['tl', 'tc', 'tr', 'bl', 'bc', 'br'].map(p => (
-                        <button key={p} onClick={() => setPosition(p)} className={`aspect-square flex items-center justify-center rounded-lg text-[8px] font-bold uppercase transition-all ${position === p ? 'bg-white shadow-sm text-accent' : 'text-gray-400 hover:text-gray-600'}`}>{p}</button>
+                        <button key={p} onClick={() => setPosition(p)} className={`aspect-square flex items-center justify-center rounded-lg text-[10px] font-bold uppercase transition-all ${position === p ? 'bg-white dark:bg-slate-800 shadow-sm text-accent ring-1 ring-accent/20' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}>{p}</button>
                       ))}
                     </div>
                   </div>
                 </div>
-                <button onClick={handleApply} disabled={status === 'loading'} className="w-full py-4 bg-accent text-white rounded-xl font-bold shadow-lg hover:bg-accent-hover transition-all">
-                  {status === 'loading' ? 'Applying...' : 'Add Page Numbers'}
+                <button
+                  onClick={handleApply}
+                  disabled={status === 'loading'}
+                  className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${status === 'loading' ? 'bg-gray-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/20 active:scale-[0.98]'}`}
+                >
+                  {status === 'loading' ? <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div> : 'Add Page Numbers'}
                 </button>
               </div>
             )}
@@ -1201,30 +1351,33 @@ const ImageToPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-4xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-10 text-center">
-        <button onClick={() => navigate('/tools')} className="flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-900 mb-4 mx-auto">
-          <ChevronLeft size={16} /> Back to Tools
-        </button>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Image to PDF</h1>
-        <p className="text-gray-500 text-sm">Combine your images into a single PDF</p>
+      <div className="mb-12 text-center md:text-left">
+        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Conversion</div>
+        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Image to PDF</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Turn your images and photos into a professional PDF</p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm">
+      <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
           <div className="text-center py-8">
             <CheckCircle2 size={48} className="text-green-500 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold mb-8">PDF Created!</h2>
-            <div className="flex flex-col gap-3 max-w-xs mx-auto">
-              <a href={resultUrl} download="images.pdf" className="bg-accent text-white py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
-              <button onClick={clear} className="py-3 text-gray-500">Convert more images</button>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">PDF Created!</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Your images have been converted successfully.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href={resultUrl} download="images.pdf" className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2"><Download size={20} /> Download PDF</a>
+              <button onClick={clear} className="bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-8 py-3 rounded-xl font-bold transition-all">Convert More</button>
             </div>
           </div>
         ) : (
           <div className="space-y-10">
             <FileUpload files={files} onFilesChange={setFiles} accept="image/jpeg,image/png" label="Images" icon={ImageIcon} />
             {files.length > 0 && (
-              <button onClick={handleConvert} disabled={status === 'loading'} className="w-full py-4 bg-accent text-white rounded-xl font-bold shadow-lg hover:bg-accent-hover transition-all flex items-center justify-center gap-2">
-                {status === 'loading' ? <><Loader2 size={20} className="animate-spin" /> Converting...</> : 'Convert to PDF'}
+              <button
+                onClick={handleConvert}
+                disabled={status === 'loading'}
+                className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${status === 'loading' ? 'bg-gray-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/20 active:scale-[0.98]'}`}
+              >
+                {status === 'loading' ? <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div> : <><ImageIcon size={20} /> Convert to PDF</>}
               </button>
             )}
           </div>
@@ -1292,44 +1445,69 @@ const PDFToImageTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-4xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-10 text-center">
-        <button onClick={() => navigate('/tools')} className="flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-900 mb-4 mx-auto">
-          <ChevronLeft size={16} /> Back to Tools
-        </button>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">PDF to Image</h1>
-        <p className="text-gray-500 text-sm">Convert your PDF pages into high-quality images</p>
+      <div className="mb-12 text-center md:text-left">
+        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Export</div>
+        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">PDF to Image</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Export your PDF pages as high-quality PNG or JPG images</p>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm">
+      <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
           <div className="text-center py-8">
             <CheckCircle2 size={48} className="text-green-500 mx-auto mb-6" />
-            <h2 className="text-2xl font-bold mb-8">Conversion Complete!</h2>
-            <div className="flex flex-col gap-3 max-w-xs mx-auto">
-              <a href={resultUrl} download="images.zip" className="bg-accent text-white py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2"><Archive size={20} /> Download ZIP</a>
-              <button onClick={clear} className="py-3 text-gray-500">Convert another PDF</button>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Export Complete!</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-8 font-medium">Your images are ready for download.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href={resultUrl} download="images.zip" className="bg-accent hover:bg-accent-hover text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-accent/20 transition-all flex items-center justify-center gap-2"><Archive size={20} /> Download ZIP</a>
+              <button onClick={clear} className="bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-8 py-3 rounded-xl font-bold transition-all">Export Another</button>
             </div>
           </div>
         ) : (
           <div className="space-y-8">
             <FileUpload files={files} onFilesChange={setFiles} accept=".pdf" multiple={false} label="PDF file" icon={FileImage} />
             {files.length > 0 && (
-              <div className="space-y-6 pt-4 border-t border-gray-100">
-                <div className="flex gap-4">
-                  <div className="flex-1 space-y-1"><label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Format</label><div className="flex gap-1 bg-gray-100 p-1 rounded-lg"><button onClick={() => setFormat('png')} className={`flex-1 py-1 text-xs font-bold rounded ${format === 'png' ? 'bg-white shadow-sm' : 'text-gray-500'}`}>PNG</button><button onClick={() => setFormat('jpg')} className={`flex-1 py-1 text-xs font-bold rounded ${format === 'jpg' ? 'bg-white shadow-sm' : 'text-gray-500'}`}>JPG</button></div></div>
-                  {format === 'jpg' && <div className="flex-1 space-y-1"><label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Quality: {Math.round(quality * 100)}%</label><input type="range" min="0.1" max="1" step="0.1" value={quality} onChange={(e) => setQuality(parseFloat(e.target.value))} className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none accent-accent" /></div>}
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 max-h-[250px] overflow-y-auto bg-gray-50 p-3 rounded-xl">
-                  {thumbnails.map((thumb, i) => (
-                    <div key={i} onClick={() => { const n = new Set(selectedPages); if (n.has(i)) n.delete(i); else n.add(i); setSelectedPages(n); }} className={`relative aspect-[3/4] bg-white border-2 rounded-lg cursor-pointer transition-all ${selectedPages.has(i) ? 'border-accent' : 'border-gray-200 opacity-60'}`}>
-                      <img src={thumb} className="w-full h-full object-contain" />
-                      {selectedPages.has(i) && <CheckCircle2 size={12} className="absolute top-1 right-1 text-accent" />}
-                      <div className="absolute top-1 left-1 bg-gray-900/80 text-white text-[8px] px-1 rounded font-bold">{i + 1}</div>
+              <div className="space-y-8 pt-4 border-t border-gray-100 dark:border-slate-800">
+                <div className="flex flex-col md:flex-row gap-8">
+                  <div className="flex-1 space-y-4">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Format</label>
+                    <div className="flex gap-1 bg-gray-100 dark:bg-slate-900 p-1 rounded-xl border border-gray-200 dark:border-slate-800">
+                      <button onClick={() => setFormat('png')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${format === 'png' ? 'bg-white dark:bg-slate-800 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500'}`}>PNG</button>
+                      <button onClick={() => setFormat('jpg')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${format === 'jpg' ? 'bg-white dark:bg-slate-800 shadow-sm text-slate-900 dark:text-white' : 'text-slate-500'}`}>JPG</button>
                     </div>
-                  ))}
+                  </div>
+                  {format === 'jpg' && (
+                    <div className="flex-1 space-y-4">
+                      <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Quality: {Math.round(quality * 100)}%</label>
+                      <input type="range" min="0.1" max="1" step="0.1" value={quality} onChange={(e) => setQuality(parseFloat(e.target.value))} className="w-full h-1.5 bg-gray-100 dark:bg-slate-800 rounded-lg appearance-none accent-accent cursor-pointer" />
+                    </div>
+                  )}
                 </div>
-                <button onClick={handleConvert} disabled={status === 'loading' || selectedPages.size === 0} className="w-full py-4 bg-accent text-white rounded-xl font-bold shadow-lg hover:bg-accent-hover transition-all">
-                  {status === 'loading' ? 'Processing...' : 'Convert to Images'}
+                
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center px-1">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Select Pages ({selectedPages.size})</label>
+                    <div className="flex gap-4">
+                      <button onClick={() => setSelectedPages(new Set(thumbnails.map((_, i) => i)))} className="text-[10px] font-bold text-accent hover:underline">Select All</button>
+                      <button onClick={() => setSelectedPages(new Set())} className="text-[10px] font-bold text-slate-400 hover:underline">Clear</button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4 max-h-[300px] overflow-y-auto bg-gray-50 dark:bg-slate-900/50 p-4 rounded-2xl border border-gray-100 dark:border-slate-800">
+                    {thumbnails.map((thumb, i) => (
+                      <div key={i} onClick={() => { const n = new Set(selectedPages); if (n.has(i)) n.delete(i); else n.add(i); setSelectedPages(n); }} className={`relative aspect-[3/4] bg-white dark:bg-slate-800 border-2 rounded-xl cursor-pointer transition-all ${selectedPages.has(i) ? 'border-accent ring-2 ring-accent/20' : 'border-gray-100 dark:border-slate-800 opacity-60 hover:opacity-100'}`}>
+                        <img src={thumb} className="w-full h-full object-contain p-2" />
+                        {selectedPages.has(i) && <div className="absolute top-2 right-2 bg-accent text-white rounded-full p-1 shadow-lg"><Check size={10} /></div>}
+                        <div className="absolute bottom-2 left-2 bg-slate-900/80 text-white text-[8px] px-2 py-0.5 rounded font-bold">{i + 1}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleConvert}
+                  disabled={status === 'loading' || selectedPages.size === 0}
+                  className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${status === 'loading' || selectedPages.size === 0 ? 'bg-gray-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/20 active:scale-[0.98]'}`}
+                >
+                  {status === 'loading' ? <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div> : <><FileImage size={20} /> Export to Images</>}
                 </button>
               </div>
             )}
@@ -1434,6 +1612,7 @@ function AppContent() {
         <Route path="/tools/split" element={<SplitPDFTool />} />
         <Route path="/tools/rotate" element={<RotatePDFTool />} />
         <Route path="/tools/compress" element={<CompressPDFTool />} />
+        <Route path="/tools/metadata" element={<MetadataEditorTool />} />
         <Route path="/tools/protect" element={<ProtectPDFTool />} />
         <Route path="/tools/watermark" element={<WatermarkPDFTool />} />
         <Route path="/tools/page-numbers" element={<PageNumbersPDFTool />} />

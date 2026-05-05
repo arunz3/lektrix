@@ -1400,7 +1400,7 @@ const Layout = ({ children }) => {
             </div>
           </div>
           <div className="max-w-6xl mx-auto px-6 mt-16 pt-8 border-t border-gray-50 dark:border-slate-800/50 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-[0.2em]">
-            <div>© 2025 lektrix. All rights reserved.</div>
+            <div>© 2026 lektrix. All rights reserved.</div>
             <div className="flex gap-6">
               <span className="flex items-center gap-1.5"><ShieldCheck size={12} className="text-green-500" /> Secure</span>
               <span className="flex items-center gap-1.5 text-accent">100% Private</span>

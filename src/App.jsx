@@ -1540,7 +1540,7 @@ const Layout = ({ children }) => {
             </nav>
             <div className="flex items-center gap-4">
               <ThemeToggle />
-              <button onClick={() => navigate('/tools')} className="bg-accent hover:bg-accent-hover text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-accent/20 active:scale-95">Open App</button>
+              <a href="https://lektrix-img.pages.dev/" className="bg-accent hover:bg-accent-hover text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-accent/20 active:scale-95">try &gt; Lektrix IMG</a>
             </div>
           </div>
         </header>

@@ -168,6 +168,25 @@ const FileUpload = ({
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  const prevFilesRef = useRef(files);
+
+  useEffect(() => {
+    const currentIds = new Set(files.map(f => f.id));
+    prevFilesRef.current.forEach(f => {
+      if (f.preview && !currentIds.has(f.id)) {
+        URL.revokeObjectURL(f.preview);
+      }
+    });
+    prevFilesRef.current = files;
+  }, [files]);
+
+  useEffect(() => {
+    return () => {
+      prevFilesRef.current.forEach(f => {
+        if (f.preview) URL.revokeObjectURL(f.preview);
+      });
+    };
+  }, []);
 
   const handleFiles = (newFiles) => {
     const fileList = Array.from(newFiles).map(file => ({
@@ -479,6 +498,12 @@ const MergePDFTool = () => {
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
 
+  useEffect(() => {
+    return () => {
+      if (resultUrl) URL.revokeObjectURL(resultUrl);
+    };
+  }, [resultUrl]);
+
   const handleMerge = async () => {
     if (files.length < 2) return;
     setStatus('loading');
@@ -543,6 +568,12 @@ const SplitPDFTool = () => {
   const [status, setStatus] = useState('idle');
   const [result, setResult] = useState(null);
   const [pageCount, setPageCount] = useState(0);
+
+  useEffect(() => {
+    return () => {
+      if (result?.url) URL.revokeObjectURL(result.url);
+    };
+  }, [result]);
 
   useEffect(() => {
     if (files.length > 0) {
@@ -639,6 +670,12 @@ const RotatePDFTool = () => {
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
   const [isGeneratingThumbs, setIsGeneratingThumbs] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (resultUrl) URL.revokeObjectURL(resultUrl);
+    };
+  }, [resultUrl]);
 
   useEffect(() => {
     if (files.length > 0) generateThumbs(files[0].file);
@@ -793,6 +830,12 @@ const CompressPDFTool = () => {
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
 
+  useEffect(() => {
+    return () => {
+      if (resultUrl) URL.revokeObjectURL(resultUrl);
+    };
+  }, [resultUrl]);
+
   useEffect(() => { if (files.length > 0) setOriginalSize(files[0].file.size); }, [files]);
 
   const handleCompress = async () => {
@@ -888,6 +931,12 @@ const MetadataEditorTool = () => {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
   const [resultUrl, setResultUrl] = useState(null);
+
+  useEffect(() => {
+    return () => {
+      if (resultUrl) URL.revokeObjectURL(resultUrl);
+    };
+  }, [resultUrl]);
 
   useEffect(() => {
     if (files.length > 0) loadMetadata();
@@ -1000,6 +1049,12 @@ const ProtectPDFTool = () => {
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
   const [resultUrl, setResultUrl] = useState(null);
+
+  useEffect(() => {
+    return () => {
+      if (resultUrl) URL.revokeObjectURL(resultUrl);
+    };
+  }, [resultUrl]);
 
   const handleAction = async () => {
     if (files.length === 0 || !password) return;
@@ -1126,6 +1181,12 @@ const WatermarkPDFTool = () => {
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
 
+  useEffect(() => {
+    return () => {
+      if (resultUrl) URL.revokeObjectURL(resultUrl);
+    };
+  }, [resultUrl]);
+
   const onImageChange = (e) => {
     const f = e.target.files[0];
     if (f) { const r = new FileReader(); r.onload = (ev) => setWmImage(ev.target.result); r.readAsArrayBuffer(f); }
@@ -1242,6 +1303,12 @@ const PageNumbersPDFTool = () => {
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
 
+  useEffect(() => {
+    return () => {
+      if (resultUrl) URL.revokeObjectURL(resultUrl);
+    };
+  }, [resultUrl]);
+
   const handleApply = async () => {
     if (files.length === 0) return;
     setStatus('loading');
@@ -1330,6 +1397,12 @@ const ImageToPDFTool = () => {
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
 
+  useEffect(() => {
+    return () => {
+      if (resultUrl) URL.revokeObjectURL(resultUrl);
+    };
+  }, [resultUrl]);
+
   const handleConvert = async () => {
     if (files.length === 0) return;
     setStatus('loading');
@@ -1396,6 +1469,12 @@ const PDFToImageTool = () => {
   const [quality, setQuality] = useState(0.8);
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
+
+  useEffect(() => {
+    return () => {
+      if (resultUrl) URL.revokeObjectURL(resultUrl);
+    };
+  }, [resultUrl]);
 
   useEffect(() => {
     if (files.length > 0) generateThumbs(files[0].file);

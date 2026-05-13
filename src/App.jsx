@@ -569,12 +569,19 @@ const SplitPDFTool = () => {
         setResult({ url: URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })), name: 'split.pdf' });
       } else {
         const zip = new JSZip();
-        for (const idx of selectedIndices) {
+        const splitTasks = selectedIndices.map(async (idx) => {
           const newDoc = await PDFDocument.create();
           const [page] = await newDoc.copyPages(srcDoc, [idx]);
           newDoc.addPage(page);
-          zip.file(`page-${idx + 1}.pdf`, await newDoc.save());
-        }
+          const pdfBytes = await newDoc.save();
+          return { name: `page-${idx + 1}.pdf`, content: pdfBytes };
+        });
+
+        const results = await Promise.all(splitTasks);
+        results.forEach(res => {
+          zip.file(res.name, res.content);
+        });
+
         setResult({ url: URL.createObjectURL(await zip.generateAsync({ type: 'blob' })), name: 'split.zip' });
       }
       setStatus('success');

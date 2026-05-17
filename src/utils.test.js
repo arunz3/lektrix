@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { formatSize, parsePageRanges } from './utils.js';
+import { formatSize, parsePageRanges, hexToRgbValues } from './utils.js';
 
 test('formatSize utility', async (t) => {
   await t.test('formats bytes correctly', () => {
@@ -80,5 +80,19 @@ test('parsePageRanges utility', async (t) => {
 
   await t.test('handles non-numeric garbage', () => {
     assert.deepStrictEqual(parsePageRanges('abc, def-ghi, 1', maxPages), [0]);
+  });
+});
+
+test('hexToRgbValues utility', async (t) => {
+  await t.test('converts hex strings to RGB ratios correctly', () => {
+    assert.deepStrictEqual(hexToRgbValues('#000000'), { r: 0, g: 0, b: 0 });
+    assert.deepStrictEqual(hexToRgbValues('#FFFFFF'), { r: 1, g: 1, b: 1 });
+    assert.deepStrictEqual(hexToRgbValues('#FF0000'), { r: 1, g: 0, b: 0 });
+    assert.deepStrictEqual(hexToRgbValues('#00FF00'), { r: 0, g: 1, b: 0 });
+    assert.deepStrictEqual(hexToRgbValues('#0000FF'), { r: 0, g: 0, b: 1 });
+    const blue = hexToRgbValues('#336699');
+    assert(Math.abs(blue.r - 51/255) < 0.0001);
+    assert(Math.abs(blue.g - 102/255) < 0.0001);
+    assert(Math.abs(blue.b - 153/255) < 0.0001);
   });
 });

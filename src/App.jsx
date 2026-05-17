@@ -93,11 +93,13 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           access_key: WEB3FORMS_ACCESS_KEY,
-          subject: `Lektrix ${category}: New Submission`,
-          from_name: email || "Anonymous Lektrix User",
-          category,
-          rating: `${rating} / 5 Stars`,
-          message,
+          subject: `[Lektrix Image] ${category} from ${email || "Anonymous"}`,
+          from_name: email ? email.split("@")[0] : "Lektrix User",
+          Tag: "Lektrix Image",
+          Category: category,
+          ...(category === "Suggestion" ? { Rating: `${rating} / 5 Stars` } : {}),
+          Message: message,
+          Email: email || "Not provided",
         }),
       });
       const data = await response.json();
@@ -186,7 +188,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                 </div>
               </div>
 
-              {category !== "Contact" && (
+              {category === "Suggestion" && (
                 <div className="space-y-2">
                   <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">
                     <span>Experience Rating</span>

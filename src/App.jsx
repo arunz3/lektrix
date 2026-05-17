@@ -56,7 +56,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLi
 
 // --- Feedback Modal ---
 
-const WEB3FORMS_ACCESS_KEY = "7a83d366-beae-46b0-9b4b-488cb95b1dc0"; // Replace with your free key from web3forms.com
+const WEB3FORMS_ACCESS_KEY = "3a8827c3-38ee-46c3-9f6d-94f9ce6cb0ca"; // Web3Forms access key
 
 const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryChange }) => {
   const [rating, setRating] = useState(5);

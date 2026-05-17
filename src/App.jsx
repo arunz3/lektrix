@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { parsePageRanges, formatSize } from './utils';
 import {
   BrowserRouter,
   Routes,
@@ -70,33 +71,6 @@ import { encryptPDF } from '@pdfsmaller/pdf-encrypt-lite';
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
-// --- Utils ---
-
-const parsePageRanges = (input, maxPages) => {
-  if (!input.trim()) return [];
-  const parts = input.split(',').map(p => p.trim());
-  const pages = new Set();
-  for (const part of parts) {
-    if (part.includes('-')) {
-      const [start, end] = part.split('-').map(n => parseInt(n, 10));
-      if (!isNaN(start) && !isNaN(end) && start > 0 && end >= start) {
-        for (let i = start; i <= Math.min(end, maxPages); i++) pages.add(i - 1);
-      }
-    } else {
-      const page = parseInt(part, 10);
-      if (!isNaN(page) && page > 0 && page <= maxPages) pages.add(page - 1);
-    }
-  }
-  return Array.from(pages).sort((a, b) => a - b);
-};
-
-const formatSize = (bytes) => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
 
 const hexToRgb = (hex) => {
   const r = parseInt(hex.slice(1, 3), 16) / 255;

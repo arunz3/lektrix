@@ -1588,9 +1588,18 @@ const Layout = ({ children }) => {
               <Link to="/tools" className={`${isActive('/tools') ? 'text-accent' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'} transition-colors`}>Tools</Link>
               <Link to="/about" className={`${isActive('/about') ? 'text-accent' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'} transition-colors`}>About</Link>
             </nav>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 md:gap-4">
               <ThemeToggle />
-              <a href="https://lektrix-img.pages.dev/" className="bg-accent hover:bg-accent-hover text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-accent/20 active:scale-95">try &gt; Lektrix IMG</a>
+              <a 
+                href="https://chai4.me/rarun" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                title="Support rarun on Chai4Me" 
+                className="inline-flex items-center justify-center bg-white dark:bg-slate-800 px-3 md:px-4 py-1.5 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:scale-105 transition-all active:scale-95"
+              >
+                <img src="https://chai4.me/icons/wordmark.png" alt="Chai4Me" className="h-6 md:h-7 object-contain dark:invert" />
+              </a>
+              <a href="https://lektrix-img.pages.dev/" className="bg-accent hover:bg-accent-hover text-white px-4 md:px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-accent/20 active:scale-95">try &gt; Lektrix IMG</a>
             </div>
           </div>
         </header>

@@ -38,7 +38,11 @@ import {
   Moon,
   Combine,
   Stamp,
-  Save
+  Save,
+  MessageSquare,
+  Send,
+  Star,
+  Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PDFDocument, degrees, rgb, StandardFonts } from 'pdf-lib';
@@ -49,6 +53,201 @@ import { parsePageRanges, formatSize, hexToRgbValues } from './utils';
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+// --- Feedback Modal ---
+
+const WEB3FORMS_ACCESS_KEY = "7a83d366-beae-46b0-9b4b-488cb95b1dc0"; // Web3Forms public test/demo key
+
+const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryChange }) => {
+  const [rating, setRating] = useState(5);
+  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle");
+
+  const handleClose = () => {
+    setStatus("idle");
+    setMessage("");
+    setEmail("");
+    onClose();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    setStatus("loading");
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: `Lektrix ${category}: New Submission`,
+          from_name: email || "Anonymous Lektrix User",
+          category,
+          rating: `${rating} / 5 Stars`,
+          message,
+        }),
+      });
+      if (response.ok) {
+        setStatus("success");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/60 backdrop-blur-sm">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative overflow-hidden text-slate-900 dark:text-white"
+        >
+          <button
+            onClick={handleClose}
+            className="absolute top-6 right-6 text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+          >
+            <X size={20} />
+          </button>
+
+          {status === "success" ? (
+            <div className="text-center py-8 space-y-4">
+              <div className="w-16 h-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto">
+                <CheckCircle2 size={36} />
+              </div>
+              <h3 className="text-2xl font-bold">Thank You!</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto font-medium">
+                Your feedback has been received. We truly appreciate your support in making Lektrix better!
+              </p>
+              <button
+                onClick={handleClose}
+                className="mt-6 w-full py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-semibold hover:opacity-90 transition-opacity cursor-pointer shadow-lg"
+              >
+                Close
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <div className="flex items-center gap-1.5 text-accent text-xs font-bold uppercase tracking-wider mb-2">
+                  <Sparkles size={14} /> Get in Touch
+                </div>
+                <h3 className="text-2xl font-bold">Contact &amp; Feedback</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mt-1 font-medium">
+                  Have a suggestion, question, or bug report? Let us know!
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Category
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {["Suggestion", "Bug Report", "Contact"].map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => onCategoryChange(cat)}
+                      className={`py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                        category === cat
+                          ? "bg-accent/10 border-accent text-accent shadow-sm"
+                          : "border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {category !== "Contact" && (
+                <div className="space-y-2">
+                  <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                    <span>Experience Rating</span>
+                    <span className="text-slate-900 dark:text-white font-bold">{rating} / 5</span>
+                  </div>
+                  <div className="flex items-center gap-2 pt-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRating(star)}
+                        className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                          star <= rating ? "text-amber-400" : "text-gray-200 dark:text-slate-700 hover:text-amber-400/50"
+                        }`}
+                      >
+                        <Star size={26} fill={star <= rating ? "currentColor" : "none"} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Email <span className="text-slate-400 dark:text-slate-600 font-normal">(Optional)</span>
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com (for replies)"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-accent text-sm transition-colors font-medium"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Message <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={
+                    category === "Bug Report"
+                      ? "What happened? How can we reproduce it?"
+                      : "What feature or idea would you like to see?"
+                  }
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-accent text-sm transition-colors resize-none font-medium"
+                ></textarea>
+              </div>
+
+              {status === "error" && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-xs font-semibold flex items-center gap-2">
+                  <AlertCircle size={16} /> Failed to submit feedback. Please try again.
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={status === "loading" || !message.trim()}
+                className="w-full py-3.5 bg-accent hover:bg-accent-hover text-white rounded-xl font-bold shadow-lg shadow-accent/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none text-sm cursor-pointer"
+              >
+                {status === "loading" ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" /> Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send size={16} /> Send {category}
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+};
 
 // --- Branding Components ---
 
@@ -1574,9 +1773,25 @@ const PDFToImageTool = () => {
 const Layout = ({ children }) => {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalCategory, setModalCategory] = useState("Suggestion");
+
+  const openFeedback = (cat = "Suggestion") => {
+    setModalCategory(cat);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="min-h-screen relative font-sans text-slate-900 dark:text-slate-100 bg-white dark:bg-[#0f172a] transition-colors duration-300">
+      <FeedbackModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} initialCategory={modalCategory} />
+      <button
+        onClick={() => openFeedback("Suggestion")}
+        className="fixed bottom-6 right-6 z-40 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 text-sm font-semibold hover:scale-105 active:scale-95 transition-all border border-slate-800 dark:border-white/20 group cursor-pointer"
+      >
+        <MessageSquare size={18} className="text-accent group-hover:rotate-12 transition-transform" />
+        <span className="hidden sm:inline font-bold">Feedback</span>
+      </button>
+
       <div className="absolute inset-0 bg-grid z-0 pointer-events-none"></div>
       <div className="relative z-10 flex flex-col min-h-screen">
         <header className="border-b border-gray-100 dark:border-slate-800/60 bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-md sticky top-0 z-50">
@@ -1618,7 +1833,7 @@ const Layout = ({ children }) => {
                 Professional PDF tools, reinvented for privacy. 100% client-side document manipulation.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-8 md:col-span-2">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:col-span-2">
               <div className="space-y-4">
                 <h4 className="text-xs font-bold text-gray-400 dark:text-slate-600 uppercase tracking-widest">Platform</h4>
                 <div className="flex flex-col gap-2 text-sm text-gray-600 dark:text-slate-400 font-medium">
@@ -1628,6 +1843,13 @@ const Layout = ({ children }) => {
                 </div>
               </div>
               <div className="space-y-4">
+                <h4 className="text-xs font-bold text-gray-400 dark:text-slate-600 uppercase tracking-widest">Connect</h4>
+                <div className="flex flex-col gap-2 text-sm text-gray-600 dark:text-slate-400 font-medium items-start">
+                  <button onClick={() => openFeedback('Contact')} className="hover:text-accent transition-colors cursor-pointer text-left">Contact</button>
+                  <button onClick={() => openFeedback('Suggestion')} className="hover:text-accent transition-colors cursor-pointer text-left">Feedback &amp; Suggestion</button>
+                </div>
+              </div>
+              <div className="space-y-4 col-span-2 md:col-span-1">
                 <h4 className="text-xs font-bold text-gray-400 dark:text-slate-600 uppercase tracking-widest">Legal</h4>
                 <div className="flex flex-col gap-2 text-sm text-gray-600 dark:text-slate-400 font-medium">
                   <Link to="/privacy" className="hover:text-accent transition-colors">Privacy Policy</Link>

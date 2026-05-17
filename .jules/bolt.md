@@ -1,0 +1,3 @@
+## 2024-05-17 - Parallelizing Async Operations in Client-Side PDF Tools
+**Learning:** In a completely client-side architecture handling large files (like ArrayBuffers for PDFs or images), sequential await blocks in loops (e.g., `for (const f of files) { await PDFDocument.load(...) }`) create a significant bottleneck. Benchmarks show replacing sequential parsing/loading of multiple user-uploaded files with `Promise.all()` drastically reduces the time before processing (like copying pages or drawing images) begins.
+**Action:** When a tool supports multiple files or multiple pages (Merge, Split, Image-to-PDF), always check if the initial loading/parsing step can be parallelized with `Promise.all()` before performing the sequential manipulation operations.

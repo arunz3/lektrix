@@ -103,6 +103,37 @@ const Logo = ({ size = "normal", showText = true, className = "" }) => {
   );
 };
 
+const ToolHeader = ({ title, subtitle, category, showBack = false, className = "mb-12" }) => {
+  const navigate = useNavigate();
+
+  if (showBack) {
+    return (
+      <div className="mb-10 text-center">
+        <button
+          onClick={() => navigate('/tools')}
+          className="flex items-center gap-1 text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white mb-4 mx-auto"
+        >
+          <ChevronLeft size={16} /> Back to Tools
+        </button>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{title}</h1>
+        <p className="text-gray-500 dark:text-slate-400 text-sm">{subtitle}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className={className}>
+      {category && (
+        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">
+          {category}
+        </div>
+      )}
+      <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">{title}</h2>
+      <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{subtitle}</p>
+    </div>
+  );
+};
+
 // --- Theme Management ---
 
 const ThemeToggle = () => {
@@ -499,13 +530,11 @@ const MergePDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-3xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-10 text-center">
-        <button onClick={() => navigate('/tools')} className="flex items-center gap-1 text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white mb-4 mx-auto">
-          <ChevronLeft size={16} /> Back to Tools
-        </button>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Merge PDF</h1>
-        <p className="text-gray-500 dark:text-slate-400 text-sm">Combine multiple PDF files into one document</p>
-      </div>
+      <ToolHeader
+        title="Merge PDF"
+        subtitle="Combine multiple PDF files into one document"
+        showBack={true}
+      />
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
@@ -597,13 +626,11 @@ const SplitPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-10 text-center">
-        <button onClick={() => navigate('/tools')} className="flex items-center gap-1 text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white mb-4 mx-auto">
-          <ChevronLeft size={16} /> Back to Tools
-        </button>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Split PDF</h1>
-        <p className="text-gray-500 dark:text-slate-400 text-sm">Extract specific pages or split into multiple files</p>
-      </div>
+      <ToolHeader
+        title="Split PDF"
+        subtitle="Extract specific pages or split into multiple files"
+        showBack={true}
+      />
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
@@ -726,13 +753,11 @@ const RotatePDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-5xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-10 text-center">
-        <button onClick={() => navigate('/tools')} className="flex items-center gap-1 text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white mb-4 mx-auto">
-          <ChevronLeft size={16} /> Back to Tools
-        </button>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Rotate PDF</h1>
-        <p className="text-gray-500 dark:text-slate-400 text-sm">Rotate pages individually or all at once</p>
-      </div>
+      <ToolHeader
+        title="Rotate PDF"
+        subtitle="Rotate pages individually or all at once"
+        showBack={true}
+      />
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
@@ -858,11 +883,11 @@ const CompressPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-12">
-        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Optimization</div>
-        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Compress PDF</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Reduce file size without losing quality</p>
-      </div>
+      <ToolHeader
+        title="Compress PDF"
+        subtitle="Reduce file size without losing quality"
+        category="Optimization"
+      />
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
@@ -961,11 +986,11 @@ const MetadataEditorTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-12">
-        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Properties</div>
-        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Edit Metadata</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Modify document properties like title, author, and keywords</p>
-      </div>
+      <ToolHeader
+        title="Edit Metadata"
+        subtitle="Modify document properties like title, author, and keywords"
+        category="Properties"
+      />
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
@@ -1093,11 +1118,11 @@ const ProtectPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-12">
-        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Security</div>
-        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Protect PDF</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Add or remove password protection</p>
-      </div>
+      <ToolHeader
+        title="Protect PDF"
+        subtitle="Add or remove password protection"
+        category="Security"
+      />
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
@@ -1197,11 +1222,11 @@ const WatermarkPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-12">
-        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Branding</div>
-        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Watermark PDF</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Add custom text or image watermarks to your document</p>
-      </div>
+      <ToolHeader
+        title="Watermark PDF"
+        subtitle="Add custom text or image watermarks to your document"
+        category="Branding"
+      />
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
@@ -1316,11 +1341,11 @@ const PageNumbersPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-12">
-        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Navigation</div>
-        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Page Numbers</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Add automatic page numbering to your PDF</p>
-      </div>
+      <ToolHeader
+        title="Page Numbers"
+        subtitle="Add automatic page numbering to your PDF"
+        category="Navigation"
+      />
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
@@ -1405,11 +1430,12 @@ const ImageToPDFTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-4xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-12 text-center md:text-left">
-        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Conversion</div>
-        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">Image to PDF</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Turn your images and photos into a professional PDF</p>
-      </div>
+      <ToolHeader
+        title="Image to PDF"
+        subtitle="Turn your images and photos into a professional PDF"
+        category="Conversion"
+        className="mb-12 text-center md:text-left"
+      />
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (
@@ -1505,11 +1531,12 @@ const PDFToImageTool = () => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-4xl mx-auto px-6 w-full py-12 md:py-20 flex flex-col">
-      <div className="mb-12 text-center md:text-left">
-        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">Export</div>
-        <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">PDF to Image</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Export your PDF pages as high-quality PNG or JPG images</p>
-      </div>
+      <ToolHeader
+        title="PDF to Image"
+        subtitle="Export your PDF pages as high-quality PNG or JPG images"
+        category="Export"
+        className="mb-12 text-center md:text-left"
+      />
 
       <div className="bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-sm">
         {status === 'success' ? (

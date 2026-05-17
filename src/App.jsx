@@ -66,6 +66,7 @@ import { PDFDocument, degrees, rgb, StandardFonts, PageSizes } from 'pdf-lib';
 import JSZip from 'jszip';
 import * as pdfjsLib from 'pdfjs-dist';
 import { encryptPDF } from '@pdfsmaller/pdf-encrypt-lite';
+import { hexToRgbValues } from './utils';
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
@@ -96,13 +97,6 @@ const formatSize = (bytes) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-};
-
-const hexToRgb = (hex) => {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-  return rgb(r, g, b);
 };
 
 // --- Branding Components ---
@@ -1142,7 +1136,10 @@ const WatermarkPDFTool = () => {
       if (type === 'image' && wmImage) img = await pdfDoc.embedPng(wmImage).catch(() => pdfDoc.embedJpg(wmImage));
       for (const page of pdfDoc.getPages()) {
         const { width, height } = page.getSize();
-        if (type === 'text') page.drawText(wmText, { x: width / 2, y: height / 2, size: fontSize, font, color: hexToRgb(color), opacity, rotate: degrees(rotation), pivot: [0, 0] });
+        if (type === 'text') {
+          const { r, g, b } = hexToRgbValues(color);
+          page.drawText(wmText, { x: width / 2, y: height / 2, size: fontSize, font, color: rgb(r, g, b), opacity, rotate: degrees(rotation), pivot: [0, 0] });
+        }
         else if (img) { const dims = img.scale(imageScale); page.drawImage(img, { x: width / 2 - dims.width / 2, y: height / 2 - dims.height / 2, width: dims.width, height: dims.height, opacity, rotate: degrees(rotation) }); }
       }
       const pdfBytes = await pdfDoc.save();
@@ -1250,7 +1247,8 @@ const PageNumbersPDFTool = () => {
       const pdfDoc = await PDFDocument.load(arrayBuffer);
       const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
       const pages = pdfDoc.getPages();
-      const textColor = hexToRgb(color);
+      const { r, g, b } = hexToRgbValues(color);
+      const textColor = rgb(r, g, b);
       for (let i = 0; i < pages.length; i++) {
         const page = pages[i]; const { width, height } = page.getSize();
         const text = format === '1' ? `${i + 1}` : format === 'Page 1' ? `Page ${i + 1}` : `${i + 1} / ${pages.length}`;

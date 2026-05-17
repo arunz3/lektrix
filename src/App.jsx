@@ -1,5 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { parsePageRanges, formatSize } from './utils';
+import { useState, useRef, useEffect } from 'react';
 import {
   BrowserRouter,
   Routes,
@@ -9,52 +8,31 @@ import {
   useLocation
 } from 'react-router-dom';
 import {
-  FileBox,
   FilePlus2,
   Scissors,
   Minimize2,
   RefreshCw,
-  PenTool,
-  ScanText,
   ShieldCheck,
   ArrowRight,
   ChevronLeft,
   Upload,
   X,
-  GripVertical,
   Download,
   Loader2,
-  Trash2,
   FileText,
   CheckCircle2,
   AlertCircle,
   RotateCcw,
   RotateCw,
-  LayoutGrid,
-  Settings2,
   Zap,
   Check,
   Lock,
-  Unlock,
-  ShieldAlert,
-  Eye,
-  EyeOff,
   Type,
   Image as ImageIcon,
-  AlignCenter,
-  ArrowUpLeft,
-  ArrowUpRight,
-  ArrowDownLeft,
-  ArrowDownRight,
   Hash,
-  MoveDown,
-  MoveUp,
   FileImage,
-  Columns,
-  Maximize,
   Archive,
   Plus,
-  Info,
   Scale,
   Sun,
   Moon,
@@ -63,15 +41,14 @@ import {
   Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PDFDocument, degrees, rgb, StandardFonts, PageSizes } from 'pdf-lib';
+import { PDFDocument, degrees, rgb, StandardFonts } from 'pdf-lib';
 import JSZip from 'jszip';
 import * as pdfjsLib from 'pdfjs-dist';
 import { encryptPDF } from '@pdfsmaller/pdf-encrypt-lite';
-import { hexToRgbValues } from './utils';
+import { parsePageRanges, formatSize, hexToRgbValues } from './utils';
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-
 
 // --- Branding Components ---
 
@@ -93,37 +70,6 @@ const Logo = ({ size = "normal", showText = true, className = "" }) => {
           lektrix
         </span>
       )}
-    </div>
-  );
-};
-
-const ToolHeader = ({ title, subtitle, category, showBack = false, className = "mb-12" }) => {
-  const navigate = useNavigate();
-
-  if (showBack) {
-    return (
-      <div className="mb-10 text-center">
-        <button
-          onClick={() => navigate('/tools')}
-          className="flex items-center gap-1 text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white mb-4 mx-auto"
-        >
-          <ChevronLeft size={16} /> Back to Tools
-        </button>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{title}</h1>
-        <p className="text-gray-500 dark:text-slate-400 text-sm">{subtitle}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className={className}>
-      {category && (
-        <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">
-          {category}
-        </div>
-      )}
-      <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">{title}</h2>
-      <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{subtitle}</p>
     </div>
   );
 };
@@ -489,10 +435,27 @@ const TermsPage = () => {
   );
 };
 
+// --- Tool Header Component ---
+
+const ToolHeader = ({ title, subtitle, category, showBack = true, className = "mb-12 text-center md:text-left" }) => {
+  const navigate = useNavigate();
+  return (
+    <div className={className}>
+      {showBack && (
+        <button onClick={() => navigate('/tools')} className="flex items-center gap-1 text-sm font-medium text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white mb-4 mx-auto md:mx-0">
+          <ChevronLeft size={16} /> Back to Tools
+        </button>
+      )}
+      {category && <div className="inline-flex items-center bg-accent/10 text-accent px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">{category}</div>}
+      <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">{title}</h2>
+      <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">{subtitle}</p>
+    </div>
+  );
+};
+
 // --- Tool Implementations ---
 
 const MergePDFTool = () => {
-  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
@@ -558,7 +521,6 @@ const MergePDFTool = () => {
 };
 
 const SplitPDFTool = () => {
-  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [pagesInput, setPagesInput] = useState('');
   const [mode, setMode] = useState('extract');
@@ -573,12 +535,21 @@ const SplitPDFTool = () => {
   }, [result]);
 
   useEffect(() => {
-    if (files.length > 0) {
-      const f = files[0].file;
-      f.arrayBuffer().then(buf => PDFDocument.load(buf)).then(pdf => setPageCount(pdf.getPageCount())).catch(() => { });
-    } else {
-      setPageCount(0);
-    }
+    const fetchPageCount = async () => {
+      if (files.length === 0) {
+        setPageCount(0);
+        return;
+      }
+      try {
+        const f = files[0].file;
+        const buf = await f.arrayBuffer();
+        const pdf = await PDFDocument.load(buf);
+        setPageCount(pdf.getPageCount());
+      } catch {
+        setPageCount(0);
+      }
+    };
+    fetchPageCount();
   }, [files]);
 
   const handleSplit = async () => {
@@ -613,7 +584,7 @@ const SplitPDFTool = () => {
         setResult({ url: URL.createObjectURL(await zip.generateAsync({ type: 'blob' })), name: 'split.zip' });
       }
       setStatus('success');
-    } catch (err) { setStatus('error'); }
+    } catch { setStatus('error'); }
   };
 
   const clear = () => { setFiles([]); setPagesInput(''); setStatus('idle'); setResult(null); };
@@ -665,13 +636,11 @@ const SplitPDFTool = () => {
 };
 
 const RotatePDFTool = () => {
-  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [rotations, setRotations] = useState({}); // Stores absolute rotation (0, 90, 180, 270)
   const [thumbnails, setThumbnails] = useState([]);
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
-  const [isGeneratingThumbs, setIsGeneratingThumbs] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -680,28 +649,31 @@ const RotatePDFTool = () => {
   }, [resultUrl]);
 
   useEffect(() => {
-    if (files.length > 0) generateThumbs(files[0].file);
-    else { setThumbnails([]); setRotations({}); }
-  }, [files]);
-
-  const generateThumbs = async (f) => {
-    setIsGeneratingThumbs(true);
-    try {
-      const arrayBuffer = await f.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const thumbUrls = [];
-      for (let i = 1; i <= Math.min(pdf.numPages, 100); i++) {
-        const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 0.3 });
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        canvas.height = viewport.height; canvas.width = viewport.width;
-        await page.render({ canvasContext: context, viewport }).promise;
-        thumbUrls.push(canvas.toDataURL());
+    const generateThumbs = async () => {
+      if (files.length === 0) {
+        setThumbnails([]);
+        setRotations({});
+        return;
       }
-      setThumbnails(thumbUrls);
-    } catch (err) { } finally { setIsGeneratingThumbs(false); }
-  };
+      try {
+        const f = files[0].file;
+        const arrayBuffer = await f.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const thumbUrls = [];
+        for (let i = 1; i <= Math.min(pdf.numPages, 100); i++) {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 0.3 });
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.height = viewport.height; canvas.width = viewport.width;
+          await page.render({ canvasContext: context, viewport }).promise;
+          thumbUrls.push(canvas.toDataURL());
+        }
+        setThumbnails(thumbUrls);
+      } catch { /* ignore */ }
+    };
+    generateThumbs();
+  }, [files]);
 
   const rotatePage = (i, amount) => {
     setRotations(prev => ({
@@ -822,9 +794,7 @@ const RotatePDFTool = () => {
 };
 
 const CompressPDFTool = () => {
-  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
-  const [originalSize, setOriginalSize] = useState(0);
   const [compressedSize, setCompressedSize] = useState(0);
   const [level, setLevel] = useState('medium');
   const [status, setStatus] = useState('idle');
@@ -835,8 +805,6 @@ const CompressPDFTool = () => {
       if (resultUrl) URL.revokeObjectURL(resultUrl);
     };
   }, [resultUrl]);
-
-  useEffect(() => { if (files.length > 0) setOriginalSize(files[0].file.size); }, [files]);
 
   const handleCompress = async () => {
     if (files.length === 0) return;
@@ -869,10 +837,11 @@ const CompressPDFTool = () => {
       setCompressedSize(pdfBytes.length);
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');
-    } catch (err) { console.error(err); setStatus('error'); }
+    } catch { setStatus('error'); }
   };
 
   const clear = () => { setFiles([]); setStatus('idle'); setResultUrl(null); };
+  const originalSize = files.length > 0 ? files[0].file.size : 0;
   const reduction = originalSize ? Math.round(((originalSize - compressedSize) / originalSize) * 100) : 0;
 
   return (
@@ -925,7 +894,6 @@ const CompressPDFTool = () => {
 };
 
 const MetadataEditorTool = () => {
-  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [metadata, setMetadata] = useState({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' });
   const [status, setStatus] = useState('idle');
@@ -939,23 +907,23 @@ const MetadataEditorTool = () => {
   }, [resultUrl]);
 
   useEffect(() => {
-    if (files.length > 0) loadMetadata();
+    const fetchMetadata = async () => {
+      if (files.length === 0) return;
+      try {
+        const arrayBuffer = await files[0].file.arrayBuffer();
+        const pdfDoc = await PDFDocument.load(arrayBuffer);
+        setMetadata({
+          title: pdfDoc.getTitle() || '',
+          author: pdfDoc.getAuthor() || '',
+          subject: pdfDoc.getSubject() || '',
+          keywords: pdfDoc.getKeywords() || '',
+          creator: pdfDoc.getCreator() || '',
+          producer: pdfDoc.getProducer() || '',
+        });
+      } catch { setError('Failed to load PDF metadata'); }
+    };
+    fetchMetadata();
   }, [files]);
-
-  const loadMetadata = async () => {
-    try {
-      const arrayBuffer = await files[0].file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      setMetadata({
-        title: pdfDoc.getTitle() || '',
-        author: pdfDoc.getAuthor() || '',
-        subject: pdfDoc.getSubject() || '',
-        keywords: pdfDoc.getKeywords() || '',
-        creator: pdfDoc.getCreator() || '',
-        producer: pdfDoc.getProducer() || '',
-      });
-    } catch (err) { setError('Failed to load PDF metadata'); }
-  };
 
   const handleAction = async () => {
     if (files.length === 0) return;
@@ -973,7 +941,7 @@ const MetadataEditorTool = () => {
       const pdfBytes = await pdfDoc.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');
-    } catch (err) { setError('Operation failed'); setStatus('error'); }
+    } catch { setError('Operation failed'); setStatus('error'); }
   };
 
   const clear = () => { setFiles([]); setMetadata({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' }); setStatus('idle'); setError(''); setResultUrl(null); };
@@ -1041,7 +1009,6 @@ const MetadataEditorTool = () => {
 };
 
 const ProtectPDFTool = () => {
-  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [mode, setMode] = useState('protect');
   const [password, setPassword] = useState('');
@@ -1168,7 +1135,6 @@ const ProtectPDFTool = () => {
 };
 
 const WatermarkPDFTool = () => {
-  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [type, setType] = useState('text');
   const [wmText, setWmText] = useState('LEKTRIX');
@@ -1212,7 +1178,7 @@ const WatermarkPDFTool = () => {
       const pdfBytes = await pdfDoc.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');
-    } catch (err) { setStatus('error'); }
+    } catch { setStatus('error'); }
   };
 
   const clear = () => { setFiles([]); setWmImage(null); setStatus('idle'); setResultUrl(null); };
@@ -1297,12 +1263,11 @@ const WatermarkPDFTool = () => {
 };
 
 const PageNumbersPDFTool = () => {
-  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [format, setFormat] = useState('1');
   const [position, setPosition] = useState('bc');
-  const [fontSize, setFontSize] = useState(12);
-  const [color, setColor] = useState('#000000');
+  const fontSize = 12;
+  const color = '#000000';
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
 
@@ -1332,7 +1297,7 @@ const PageNumbersPDFTool = () => {
       const pdfBytes = await pdfDoc.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');
-    } catch (err) { setStatus('error'); }
+    } catch { setStatus('error'); }
   };
 
   const clear = () => { setFiles([]); setStatus('idle'); setResultUrl(null); };
@@ -1396,7 +1361,6 @@ const PageNumbersPDFTool = () => {
 };
 
 const ImageToPDFTool = () => {
-  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [status, setStatus] = useState('idle');
   const [resultUrl, setResultUrl] = useState(null);
@@ -1421,7 +1385,7 @@ const ImageToPDFTool = () => {
       const pdfBytes = await pdfDoc.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');
-    } catch (err) { setStatus('error'); }
+    } catch { setStatus('error'); }
   };
 
   const clear = () => { setFiles([]); setStatus('idle'); setResultUrl(null); };
@@ -1466,7 +1430,6 @@ const ImageToPDFTool = () => {
 };
 
 const PDFToImageTool = () => {
-  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [thumbnails, setThumbnails] = useState([]);
   const [selectedPages, setSelectedPages] = useState(new Set());
@@ -1482,26 +1445,29 @@ const PDFToImageTool = () => {
   }, [resultUrl]);
 
   useEffect(() => {
-    if (files.length > 0) generateThumbs(files[0].file);
-    else { setThumbnails([]); setSelectedPages(new Set()); }
-  }, [files]);
-
-  const generateThumbs = async (f) => {
-    try {
-      const arrayBuffer = await f.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const thumbUrls = []; const initialSelected = new Set();
-      for (let i = 1; i <= Math.min(pdf.numPages, 50); i++) {
-        const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 0.2 });
-        const canvas = document.createElement('canvas'); const context = canvas.getContext('2d');
-        canvas.height = viewport.height; canvas.width = viewport.width;
-        await page.render({ canvasContext: context, viewport }).promise;
-        thumbUrls.push(canvas.toDataURL()); initialSelected.add(i - 1);
+    const generateThumbs = async () => {
+      if (files.length === 0) {
+        setThumbnails([]);
+        setSelectedPages(new Set());
+        return;
       }
-      setThumbnails(thumbUrls); setSelectedPages(initialSelected);
-    } catch (err) { }
-  };
+      try {
+        const arrayBuffer = await files[0].file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const thumbUrls = []; const initialSelected = new Set();
+        for (let i = 1; i <= Math.min(pdf.numPages, 50); i++) {
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 0.2 });
+          const canvas = document.createElement('canvas'); const context = canvas.getContext('2d');
+          canvas.height = viewport.height; canvas.width = viewport.width;
+          await page.render({ canvasContext: context, viewport }).promise;
+          thumbUrls.push(canvas.toDataURL()); initialSelected.add(i - 1);
+        }
+        setThumbnails(thumbUrls); setSelectedPages(initialSelected);
+      } catch { /* ignore */ }
+    };
+    generateThumbs();
+  }, [files]);
 
   const handleConvert = async () => {
     if (files.length === 0 || selectedPages.size === 0) return;
@@ -1522,7 +1488,7 @@ const PDFToImageTool = () => {
       }
       setResultUrl(URL.createObjectURL(await zip.generateAsync({ type: 'blob' })));
       setStatus('success');
-    } catch (err) { setStatus('error'); }
+    } catch { setStatus('error'); }
   };
 
   const clear = () => { setFiles([]); setStatus('idle'); setResultUrl(null); };
@@ -1606,7 +1572,6 @@ const PDFToImageTool = () => {
 // --- Layout Wrapper ---
 
 const Layout = ({ children }) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
 

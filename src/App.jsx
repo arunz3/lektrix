@@ -283,11 +283,11 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
 
 const Logo = ({ size = "normal", showText = true, className = "" }) => {
   const iconSize = size === "large" ? 40 : size === "small" ? 18 : 24;
-  const textSize = size === "large" ? "text-4xl" : "text-xl";
+  const textSize = size === "large" ? "text-4xl" : size === "small" ? "text-base" : "text-lg sm:text-xl";
 
   return (
-    <div className={`flex items-center gap-2 group cursor-pointer ${className}`}>
-      <div className="relative flex items-center justify-center">
+    <div className={`flex items-center gap-1.5 sm:gap-2 group cursor-pointer flex-shrink-0 ${className}`}>
+      <div className="relative flex items-center justify-center flex-shrink-0">
         <Zap 
           size={iconSize} 
           fill="currentColor" 
@@ -295,7 +295,7 @@ const Logo = ({ size = "normal", showText = true, className = "" }) => {
         />
       </div>
       {showText && (
-        <span className={`font-bold tracking-tight lowercase ${textSize} text-slate-900 dark:text-white`}>
+        <span className={`font-bold tracking-tight lowercase ${textSize} text-slate-900 dark:text-white truncate`}>
           lektrix
         </span>
       )}
@@ -321,10 +321,10 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-      className="p-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:text-accent dark:hover:text-accent transition-all shadow-sm active:scale-90"
+      className="p-1.5 sm:p-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:text-accent dark:hover:text-accent transition-all shadow-sm active:scale-90 flex-shrink-0 flex items-center justify-center"
       aria-label="Toggle Theme"
     >
-      {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+      {theme === 'light' ? <Moon size={18} className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /> : <Sun size={18} className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />}
     </button>
   );
 };
@@ -1825,26 +1825,33 @@ const Layout = ({ children }) => {
       <div className="absolute inset-0 bg-grid z-0 pointer-events-none"></div>
       <div className="relative z-10 flex flex-col min-h-screen">
         <header className="border-b border-gray-100 dark:border-slate-800/60 bg-white/80 dark:bg-[#0f172a]/80 backdrop-blur-md sticky top-0 z-50">
-          <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-            <Link to="/">
-              <Logo />
-            </Link>
-            <nav className="hidden md:flex items-center gap-8 text-sm font-semibold">
+          <div className="max-w-6xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-4 relative">
+            <div className="flex items-center md:flex-1">
+              <Link to="/" className="flex-shrink-0">
+                <Logo />
+              </Link>
+            </div>
+            <nav className="hidden md:flex items-center justify-center gap-8 text-sm font-semibold md:absolute md:left-1/2 md:-translate-x-1/2">
               <Link to="/tools" className={`${isActive('/tools') ? 'text-accent' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'} transition-colors`}>Tools</Link>
               <Link to="/about" className={`${isActive('/about') ? 'text-accent' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'} transition-colors`}>About</Link>
             </nav>
-            <div className="flex items-center gap-3 md:gap-4">
+            <div className="flex items-center justify-end gap-1.5 sm:gap-3 md:gap-4 flex-shrink-0 md:flex-1">
               <ThemeToggle />
               <a 
                 href="https://chai4.me/rarun" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 title="Support rarun on Chai4Me" 
-                className="inline-flex items-center justify-center bg-white dark:bg-slate-800 px-3 md:px-4 py-1.5 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:scale-105 transition-all active:scale-95"
+                className="inline-flex items-center justify-center bg-white dark:bg-slate-800 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:scale-105 transition-all active:scale-95 flex-shrink-0"
               >
-                <img src="https://chai4.me/icons/wordmark.png" alt="Chai4Me" className="h-6 md:h-7 object-contain dark:invert" />
+                <img src="https://chai4.me/icons/wordmark.png" alt="Chai4Me" className="h-4 sm:h-6 md:h-7 object-contain dark:invert" />
               </a>
-              <a href="https://lektrix-img.pages.dev/" className="bg-accent hover:bg-accent-hover text-white px-4 md:px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-lg shadow-accent/20 active:scale-95">try &gt; Lektrix IMG</a>
+              <a 
+                href="https://lektrix-img.pages.dev/" 
+                className="bg-accent hover:bg-accent-hover text-white px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all shadow-lg shadow-accent/20 active:scale-95 whitespace-nowrap flex-shrink-0 flex items-center"
+              >
+                <span className="hidden sm:inline">try &gt;&nbsp;</span>Lektrix IMG
+              </a>
             </div>
           </div>
         </header>
@@ -1908,6 +1915,78 @@ function AppContent() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // Update SEO Title and Meta Description dynamically for Google Search indexing
+    const seoMap = {
+      "/": {
+        title: "Lektrix — Free Online PDF Editor & Secure Offline Tools",
+        desc: "Free online PDF editor and secure offline toolkit. Merge, split, compress, rotate, watermark, and convert PDF files directly in your browser without uploading to any server."
+      },
+      "/tools": {
+        title: "All Free PDF Tools — Merge, Split, Compress & Edit PDF Online | Lektrix",
+        desc: "Explore all free online PDF tools. Merge, split, compress, password protect, add watermarks, and convert PDF to images instantly in your browser."
+      },
+      "/about": {
+        title: "About Lektrix — 100% Secure & Free Online PDF Editor",
+        desc: "Learn about Lektrix, the privacy-first free online PDF editor that processes all your PDF documents completely offline inside your web browser."
+      },
+      "/privacy": {
+        title: "Privacy Policy — Secure & Private PDF Editor | Lektrix",
+        desc: "Read the Lektrix privacy policy. No server uploads, no data storage, and zero tracking. Document processing is 100% client-side."
+      },
+      "/terms": {
+        title: "Terms of Service — Lektrix Free Online PDF Editor",
+        desc: "Terms of service and usage guidelines for Lektrix free online PDF utility suite."
+      },
+      "/tools/merge": {
+        title: "Merge PDF Online Free — Combine PDF Files Securely | Lektrix",
+        desc: "Merge PDF files online for free. Combine multiple PDF documents into a single file securely and instantly inside your browser without uploading."
+      },
+      "/tools/split": {
+        title: "Split PDF Online Free — Extract PDF Pages Instantly | Lektrix",
+        desc: "Split PDF files and extract specific pages online for free. Separate your PDF document into individual pages or ranges securely."
+      },
+      "/tools/rotate": {
+        title: "Rotate PDF Online Free — Rotate PDF Pages Securely | Lektrix",
+        desc: "Rotate PDF pages online for free. Turn and orient individual or all pages within your PDF document instantly in your browser."
+      },
+      "/tools/compress": {
+        title: "Compress PDF Online Free — Reduce PDF File Size | Lektrix",
+        desc: "Compress PDF files online for free. Reduce PDF file size without losing quality using advanced offline structural compression."
+      },
+      "/tools/metadata": {
+        title: "Edit PDF Metadata Online Free — Change PDF Properties | Lektrix",
+        desc: "Edit PDF metadata online for free. Change title, author, subject, and keywords of your PDF files securely in your web browser."
+      },
+      "/tools/protect": {
+        title: "Password Protect PDF Online Free — Encrypt PDF Securely | Lektrix",
+        desc: "Password protect PDF files online for free. Encrypt and secure your PDF documents with strong passwords instantly."
+      },
+      "/tools/watermark": {
+        title: "Add Watermark to PDF Online Free — Custom Text & Image | Lektrix",
+        desc: "Add custom text or image watermarks to PDF files online for free. Stamp your documents with adjustable opacity and position securely."
+      },
+      "/tools/page-numbers": {
+        title: "Add Page Numbers to PDF Online Free | Lektrix",
+        desc: "Add page numbers to PDF files online for free. Customize font, size, and positioning of page numbering across your document."
+      },
+      "/tools/image-to-pdf": {
+        title: "Convert Image to PDF Online Free — JPG & PNG to PDF | Lektrix",
+        desc: "Convert images to PDF online for free. Combine JPG, PNG, and other photo files into a single PDF document instantly."
+      },
+      "/tools/pdf-to-image": {
+        title: "Convert PDF to JPG/PNG Online Free — Extract Images | Lektrix",
+        desc: "Convert PDF pages to high-quality JPG or PNG images online for free. Extract photos and document pages instantly in your browser."
+      }
+    };
+
+    const currentSeo = seoMap[location.pathname] || seoMap["/"];
+    document.title = currentSeo.title;
+    
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', currentSeo.desc);
+    }
   }, [location.pathname]);
 
   return (

@@ -1,0 +1,3 @@
+## 2024-05-18 - Promise.all for Client-Side File Processing
+**Learning:** Sequential processing (using `for...of` loops) for heavy file operations like `arrayBuffer()` conversions and PDF-lib's `embedJpg`/`embedPng` causes severe UI blocking and underutilizes browser concurrency. The client-side architecture handles multiple independent I/O and processing tasks much faster when parallelized.
+**Action:** When performing independent file reads or PDF object creations (like embedding images) across multiple files, map the tasks to an array of Promises and use `Promise.all()` before sequentially adding pages to preserve order.

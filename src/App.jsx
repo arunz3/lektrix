@@ -128,6 +128,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
         >
           <button
             onClick={handleClose}
+            aria-label="Close feedback modal"
             className="absolute top-6 right-6 text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
           >
             <X size={20} />
@@ -199,6 +200,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                       <button
                         key={star}
                         type="button"
+                        aria-label={`Rate ${star} stars`}
                         onClick={() => setRating(star)}
                         className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                           star <= rating ? "text-amber-400" : "text-gray-200 dark:text-slate-700 hover:text-amber-400/50"
@@ -473,6 +475,7 @@ const FileUpload = ({
                   </div>
                   <button
                     onClick={() => removeFile(file.id)}
+                    aria-label={`Remove ${file.name}`}
                     className="p-2 text-gray-300 dark:text-slate-600 hover:text-red-500 transition-colors"
                   >
                     <X size={18} />
@@ -999,8 +1002,8 @@ const RotatePDFTool = () => {
                           className="max-w-[80%] max-h-[80%] object-contain shadow-sm"
                         />
                         <div className="absolute inset-0 bg-gray-900/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                          <button onClick={() => rotatePage(i, -90)} className="p-2 bg-white shadow-lg rounded-full text-gray-900 hover:text-accent hover:scale-110 transition-all"><RotateCcw size={16} /></button>
-                          <button onClick={() => rotatePage(i, 90)} className="p-2 bg-white shadow-lg rounded-full text-gray-900 hover:text-accent hover:scale-110 transition-all"><RotateCw size={16} /></button>
+                          <button aria-label={`Rotate page ${i + 1} counter-clockwise`} onClick={() => rotatePage(i, -90)} className="p-2 bg-white shadow-lg rounded-full text-gray-900 hover:text-accent hover:scale-110 transition-all"><RotateCcw size={16} /></button>
+                          <button aria-label={`Rotate page ${i + 1} clockwise`} onClick={() => rotatePage(i, 90)} className="p-2 bg-white shadow-lg rounded-full text-gray-900 hover:text-accent hover:scale-110 transition-all"><RotateCw size={16} /></button>
                         </div>
                       </div>
                       <div className="flex justify-center text-[10px] font-bold text-gray-400">

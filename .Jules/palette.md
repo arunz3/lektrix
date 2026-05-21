@@ -1,0 +1,1 @@
+## 2025-05-21 - Initial Learning\n**Learning:** The App has numerous icon-only buttons (like remove file, star rating, modal close, rotate) missing ARIA labels.\n**Action:** Add `aria-label` to icon-only buttons for accessibility.

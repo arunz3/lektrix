@@ -1,0 +1,3 @@
+## 2026-05-21 - Parallelizing pdf-lib Tasks
+**Learning:** Sequential processing loops (`for...of`) containing independent asynchronous I/O and parse tasks (e.g., `arrayBuffer()`, `PDFDocument.load()`, `pdfDoc.embedJpg()`) become significant performance bottlenecks when processing multiple files. Because these operations do not depend on the result of the previous iteration, waiting sequentially restricts throughput.
+**Action:** Always use `Promise.all` with `Array.prototype.map` to parallelize independent `pdf-lib` parsing and file I/O operations first. Then, process the resolved results in a sequential loop (e.g., `copyPages`, `addPage`) to preserve the correct document order.

@@ -1,0 +1,4 @@
+## 2025-02-28 - Hardcoded API Key and Demo Logic
+**Vulnerability:** A Web3Forms API key (`WEB3FORMS_ACCESS_KEY`) was hardcoded directly in `src/App.jsx`. Additionally, demo mode logic relied on comparing the key against a specific dummy string.
+**Learning:** Hardcoding API keys exposes secrets in source code. Fallback/demo logic should not rely on specific dummy strings in source code.
+**Prevention:** Always use environment variables (e.g., `import.meta.env.VITE_*` in Vite) for secrets. Use truthiness checks (e.g., `!ENV_VAR`) to conditionally handle fallback logic instead of checking against dummy strings.

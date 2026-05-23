@@ -700,12 +700,21 @@ const MergePDFTool = () => {
     setStatus('loading');
     try {
       const mergedPdf = await PDFDocument.create();
-      for (const f of files) {
+
+      // Parallelize file loading and parsing
+      const pdfPromises = files.map(async (f) => {
         const arrayBuffer = await f.file.arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
+        return PDFDocument.load(arrayBuffer);
+      });
+
+      const loadedPdfs = await Promise.all(pdfPromises);
+
+      // Copy and add pages sequentially to maintain order
+      for (const pdf of loadedPdfs) {
         const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
         copiedPages.forEach((page) => mergedPdf.addPage(page));
       }
+
       const pdfBytes = await mergedPdf.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');
@@ -1605,12 +1614,22 @@ const ImageToPDFTool = () => {
     setStatus('loading');
     try {
       const pdfDoc = await PDFDocument.create();
-      for (const imgData of files) {
+
+      // Parallelize image loading and embedding
+      const imagePromises = files.map(async (imgData) => {
         const bytes = await imgData.file.arrayBuffer();
-        let img = imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+        const img = imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+        return img;
+      });
+
+      const embeddedImages = await Promise.all(imagePromises);
+
+      // Add pages sequentially to maintain order
+      for (const img of embeddedImages) {
         const page = pdfDoc.addPage([img.width, img.height]);
         page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
       }
+
       const pdfBytes = await pdfDoc.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');

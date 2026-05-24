@@ -56,7 +56,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLi
 
 // --- Feedback Modal ---
 
-const WEB3FORMS_ACCESS_KEY = "3a8827c3-38ee-46c3-9f6d-94f9ce6cb0ca"; // Web3Forms access key
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY; // Web3Forms access key
 
 const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryChange }) => {
   const [rating, setRating] = useState(5);
@@ -79,8 +79,8 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
     setStatus("loading");
     setErrorMessage("");
 
-    // If using the default placeholder demo key, simulate a successful submission for demonstration
-    if (WEB3FORMS_ACCESS_KEY === "7a83d366-beae-46b0-9b4b-488cb95b1dc0") {
+    // If no API key is set, simulate a successful submission for demonstration
+    if (!WEB3FORMS_ACCESS_KEY) {
       setTimeout(() => {
         setStatus("success");
       }, 800);
@@ -142,9 +142,9 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto font-medium">
                 Your feedback has been received. We truly appreciate your support in making Lektrix better!
               </p>
-              {WEB3FORMS_ACCESS_KEY === "7a83d366-beae-46b0-9b4b-488cb95b1dc0" && (
+              {!WEB3FORMS_ACCESS_KEY && (
                 <div className="text-[11px] bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 p-3 rounded-xl mx-auto max-w-sm text-left">
-                  ⚡ <b>Demo Mode Active:</b> Replace <code className="bg-amber-500/20 px-1 rounded font-mono">WEB3FORMS_ACCESS_KEY</code> in App.jsx with your free key from <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline font-bold">web3forms.com</a> to receive live emails!
+                  ⚡ <b>Demo Mode Active:</b> Set <code className="bg-amber-500/20 px-1 rounded font-mono">VITE_WEB3FORMS_ACCESS_KEY</code> in your <code className="bg-amber-500/20 px-1 rounded font-mono">.env</code> file with your free key from <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline font-bold">web3forms.com</a> to receive live emails!
                 </div>
               )}
               <button
@@ -249,7 +249,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                     <div>{errorMessage}</div>
                     {errorMessage.toLowerCase().includes("key") && (
                       <div className="text-[11px] text-red-400 mt-1 font-normal">
-                        Note: Get your free access key from <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline font-bold">web3forms.com</a> and paste it into <code className="bg-red-500/20 px-1 rounded font-mono">WEB3FORMS_ACCESS_KEY</code> in App.jsx.
+                        Note: Get your free access key from <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline font-bold">web3forms.com</a> and paste it into <code className="bg-red-500/20 px-1 rounded font-mono">VITE_WEB3FORMS_ACCESS_KEY</code> in your <code className="bg-red-500/20 px-1 rounded font-mono">.env</code> file.
                       </div>
                     )}
                   </div>

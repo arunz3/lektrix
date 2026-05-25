@@ -700,12 +700,20 @@ const MergePDFTool = () => {
     setStatus('loading');
     try {
       const mergedPdf = await PDFDocument.create();
-      for (const f of files) {
-        const arrayBuffer = await f.file.arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
+      // Optimization: Parallelize file reading and parsing
+      const loadedPdfs = await Promise.all(
+        files.map(async (f) => {
+          const arrayBuffer = await f.file.arrayBuffer();
+          return PDFDocument.load(arrayBuffer);
+        })
+      );
+
+      // Sequentially copy and add pages to preserve order
+      for (const pdf of loadedPdfs) {
         const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
         copiedPages.forEach((page) => mergedPdf.addPage(page));
       }
+
       const pdfBytes = await mergedPdf.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');
@@ -1605,12 +1613,21 @@ const ImageToPDFTool = () => {
     setStatus('loading');
     try {
       const pdfDoc = await PDFDocument.create();
-      for (const imgData of files) {
-        const bytes = await imgData.file.arrayBuffer();
-        let img = imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+
+      // Optimization: Parallelize reading and embedding images
+      const embeddedImages = await Promise.all(
+        files.map(async (imgData) => {
+          const bytes = await imgData.file.arrayBuffer();
+          return imgData.file.type === 'image/jpeg' ? pdfDoc.embedJpg(bytes) : pdfDoc.embedPng(bytes);
+        })
+      );
+
+      // Sequentially add pages and draw images to preserve order
+      for (const img of embeddedImages) {
         const page = pdfDoc.addPage([img.width, img.height]);
         page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
       }
+
       const pdfBytes = await pdfDoc.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');

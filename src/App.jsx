@@ -700,12 +700,19 @@ const MergePDFTool = () => {
     setStatus('loading');
     try {
       const mergedPdf = await PDFDocument.create();
-      for (const f of files) {
+
+      // Parallelize file reading and PDF parsing for better performance
+      const parsedPdfs = await Promise.all(files.map(async (f) => {
         const arrayBuffer = await f.file.arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
+        return await PDFDocument.load(arrayBuffer);
+      }));
+
+      // Sequentially copy and add pages to preserve order
+      for (const pdf of parsedPdfs) {
         const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
         copiedPages.forEach((page) => mergedPdf.addPage(page));
       }
+
       const pdfBytes = await mergedPdf.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');

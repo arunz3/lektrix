@@ -1,0 +1,3 @@
+## 2024-05-26 - Parallelizing pdf-lib I/O while preserving order
+**Learning:** The codebase has a performance anti-pattern where independent asynchronous operations like `file.arrayBuffer()`, `pdfDoc.embedJpg()`, and `PDFDocument.load()` are sequentially awaited inside `for...of` loops. This blocks subsequent files from being read or parsed until the previous one is fully processed.
+**Action:** Use `Promise.all()` to parallelize the I/O and parsing steps for all files first, returning an array of prepared objects. Then, use a sequential `for...of` loop on the resolved array to perform the final mutations (like `addPage()` or `copyPages()`) to ensure the final document preserves the original file order.

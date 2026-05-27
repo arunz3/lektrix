@@ -128,6 +128,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
         >
           <button
             onClick={handleClose}
+            aria-label="Close"
             className="absolute top-6 right-6 text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
           >
             <X size={20} />
@@ -199,6 +200,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                       <button
                         key={star}
                         type="button"
+                        aria-label={`Rate ${star} stars`}
                         onClick={() => setRating(star)}
                         className={`p-1.5 rounded-lg transition-all cursor-pointer ${
                           star <= rating ? "text-amber-400" : "text-gray-200 dark:text-slate-700 hover:text-amber-400/50"
@@ -473,6 +475,7 @@ const FileUpload = ({
                   </div>
                   <button
                     onClick={() => removeFile(file.id)}
+                    aria-label="Remove file"
                     className="p-2 text-gray-300 dark:text-slate-600 hover:text-red-500 transition-colors"
                   >
                     <X size={18} />

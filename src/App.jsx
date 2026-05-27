@@ -56,7 +56,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLi
 
 // --- Feedback Modal ---
 
-const WEB3FORMS_ACCESS_KEY = "3a8827c3-38ee-46c3-9f6d-94f9ce6cb0ca"; // Web3Forms access key
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY; // Web3Forms access key
 
 const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryChange }) => {
   const [rating, setRating] = useState(5);
@@ -79,8 +79,8 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
     setStatus("loading");
     setErrorMessage("");
 
-    // If using the default placeholder demo key, simulate a successful submission for demonstration
-    if (WEB3FORMS_ACCESS_KEY === "7a83d366-beae-46b0-9b4b-488cb95b1dc0") {
+    // If no API key is provided, simulate a successful submission for demonstration
+    if (!WEB3FORMS_ACCESS_KEY) {
       setTimeout(() => {
         setStatus("success");
       }, 800);

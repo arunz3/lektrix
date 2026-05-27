@@ -1,0 +1,3 @@
+## 2025-05-24 - Parallelize Image Embedding
+**Learning:** Performance optimization for client-side PDF tasks (like splitting pages or embedding multiple images) is achieved by using `Promise.all()` to parallelize independent asynchronous `pdf-lib` and I/O file operations (e.g., `arrayBuffer()`, `embedJpg()`) before sequentially processing the results to preserve order. Wait times from linear arrayBuffer reading and image processing loop block the thread more than necessary.
+**Action:** Use `Promise.all()` to pre-fetch and process buffers, then apply them in a fast synchronous or sequenced loop.

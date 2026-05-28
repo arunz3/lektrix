@@ -128,7 +128,9 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
         >
           <button
             onClick={handleClose}
-            className="absolute top-6 right-6 text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+            aria-label="Close feedback modal"
+            title="Close"
+            className="absolute top-6 right-6 text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent rounded-full"
           >
             <X size={20} />
           </button>
@@ -473,7 +475,9 @@ const FileUpload = ({
                   </div>
                   <button
                     onClick={() => removeFile(file.id)}
-                    className="p-2 text-gray-300 dark:text-slate-600 hover:text-red-500 transition-colors"
+                    aria-label="Remove file"
+                    title="Remove file"
+                    className="p-2 text-gray-300 dark:text-slate-600 hover:text-red-500 transition-colors focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent rounded-full"
                   >
                     <X size={18} />
                   </button>

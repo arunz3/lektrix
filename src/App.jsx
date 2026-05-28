@@ -1605,9 +1605,16 @@ const ImageToPDFTool = () => {
     setStatus('loading');
     try {
       const pdfDoc = await PDFDocument.create();
-      for (const imgData of files) {
+      // Optimization: Load and embed images concurrently to unblock the main loop,
+      // then sequentially add them to the PDF to preserve order.
+      const imagePromises = files.map(async (imgData) => {
         const bytes = await imgData.file.arrayBuffer();
-        let img = imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+        const img = imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+        return img;
+      });
+      const embeddedImages = await Promise.all(imagePromises);
+
+      for (const img of embeddedImages) {
         const page = pdfDoc.addPage([img.width, img.height]);
         page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
       }

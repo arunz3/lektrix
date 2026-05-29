@@ -1605,12 +1605,19 @@ const ImageToPDFTool = () => {
     setStatus('loading');
     try {
       const pdfDoc = await PDFDocument.create();
-      for (const imgData of files) {
+
+      // Bolt: Process I/O and PDF embedding in parallel to improve performance
+      const embeddedImages = await Promise.all(files.map(async (imgData) => {
         const bytes = await imgData.file.arrayBuffer();
-        let img = imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+        return imgData.file.type === 'image/jpeg' ? pdfDoc.embedJpg(bytes) : pdfDoc.embedPng(bytes);
+      }));
+
+      // Sequentially add to preserve correct order
+      for (const img of embeddedImages) {
         const page = pdfDoc.addPage([img.width, img.height]);
         page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
       }
+
       const pdfBytes = await pdfDoc.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');

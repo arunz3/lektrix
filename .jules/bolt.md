@@ -1,0 +1,3 @@
+## 2024-05-24 - Parallelize I/O operations before sequential processing
+**Learning:** In client-side PDF tasks, I/O operations like `arrayBuffer()` and `embedJpg()`/`embedPng()` and `PDFDocument.load()` can be independent, but their results must be processed sequentially to preserve page order. Previous implementations used sequential loops for both I/O and processing, which blocked the thread unnecessarily.
+**Action:** Use `Promise.all()` to parallelize the independent asynchronous operations first, then iterate over the resolved array to sequentially process and add them to the document in order.

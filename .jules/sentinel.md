@@ -1,0 +1,4 @@
+## 2025-02-21 - Hardcoded API Key for Web3Forms
+**Vulnerability:** A live Web3Forms API key was hardcoded in `src/App.jsx` (`WEB3FORMS_ACCESS_KEY = "3a8827c3-38ee-46c3-9f6d-94f9ce6cb0ca"`).
+**Learning:** The secret was likely hardcoded because the application relied on a specific hardcoded string ("7a83d366-beae-46b0-9b4b-488cb95b1dc0") to trigger a "Demo Mode". When developers replaced the demo key with a real one, they left it hardcoded in the source file instead of using environment variables.
+**Prevention:** Always use environment variables (`import.meta.env.VITE_*` in Vite) for API keys. For demo mode fallback logic, do not use hardcoded string checks; instead, rely on truthiness checks (e.g., `if (!ENV_VAR)`) to conditionally handle fallback logic, ensuring secrets are never committed to the source code.

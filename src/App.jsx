@@ -128,7 +128,8 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
         >
           <button
             onClick={handleClose}
-            className="absolute top-6 right-6 text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+            aria-label="Close modal"
+            className="absolute top-6 right-6 text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent"
           >
             <X size={20} />
           </button>
@@ -199,8 +200,9 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                       <button
                         key={star}
                         type="button"
+                        aria-label={"Rate " + star + " stars"}
                         onClick={() => setRating(star)}
-                        className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                        className={`p-1.5 rounded-lg transition-all cursor-pointer focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent ${
                           star <= rating ? "text-amber-400" : "text-gray-200 dark:text-slate-700 hover:text-amber-400/50"
                         }`}
                       >
@@ -321,7 +323,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-      className="p-1.5 sm:p-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:text-accent dark:hover:text-accent transition-all shadow-sm active:scale-90 flex-shrink-0 flex items-center justify-center"
+      className="p-1.5 sm:p-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:text-accent dark:hover:text-accent transition-all shadow-sm active:scale-90 flex-shrink-0 flex items-center justify-center focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent"
       aria-label="Toggle Theme"
     >
       {theme === 'light' ? <Moon size={18} className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /> : <Sun size={18} className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />}
@@ -473,7 +475,8 @@ const FileUpload = ({
                   </div>
                   <button
                     onClick={() => removeFile(file.id)}
-                    className="p-2 text-gray-300 dark:text-slate-600 hover:text-red-500 transition-colors"
+                    aria-label={"Remove " + file.name}
+                    className="p-2 text-gray-300 dark:text-slate-600 hover:text-red-500 transition-colors focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent"
                   >
                     <X size={18} />
                   </button>

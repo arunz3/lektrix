@@ -700,12 +700,21 @@ const MergePDFTool = () => {
     setStatus('loading');
     try {
       const mergedPdf = await PDFDocument.create();
-      for (const f of files) {
-        const arrayBuffer = await f.file.arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
+
+      // ⚡ Bolt: Parallelize I/O and PDFDocument loading for multiple files to eliminate sequential bottlenecks
+      const loadedPdfs = await Promise.all(
+        files.map(async (f) => {
+          const arrayBuffer = await f.file.arrayBuffer();
+          return PDFDocument.load(arrayBuffer);
+        })
+      );
+
+      // Sequentially apply the loaded PDFs to maintain deterministic file order
+      for (const pdf of loadedPdfs) {
         const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
         copiedPages.forEach((page) => mergedPdf.addPage(page));
       }
+
       const pdfBytes = await mergedPdf.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');
@@ -1605,12 +1614,22 @@ const ImageToPDFTool = () => {
     setStatus('loading');
     try {
       const pdfDoc = await PDFDocument.create();
-      for (const imgData of files) {
-        const bytes = await imgData.file.arrayBuffer();
-        let img = imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+
+      // ⚡ Bolt: Parallelize reading file buffers and embedding images to reduce processing time
+      const loadedImages = await Promise.all(
+        files.map(async (imgData) => {
+          const bytes = await imgData.file.arrayBuffer();
+          const img = imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+          return img;
+        })
+      );
+
+      // Sequentially add pages and draw images to preserve the selected order
+      for (const img of loadedImages) {
         const page = pdfDoc.addPage([img.width, img.height]);
         page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
       }
+
       const pdfBytes = await pdfDoc.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');

@@ -1,0 +1,4 @@
+## 2024-06-01 - Hardcoded Web3Forms API Key
+**Vulnerability:** A hardcoded Web3Forms API key was found in `src/App.jsx` (`WEB3FORMS_ACCESS_KEY`), and it was being used in client-side code, which is a critical security risk (exposes the secret). The application also relied on hardcoded dummy strings to detect a "demo mode".
+**Learning:** Hardcoded fallback or 'dummy' strings in source code to support demo modes are a bad pattern because they encourage committing real secrets accidentally. In Vite, environment variables should be used instead.
+**Prevention:** Do not use hardcoded fallback or 'dummy' strings in the source code to support demo modes. Refactor hardcoded API keys to securely use environment variables (e.g. `import.meta.env.VITE_*`). Use variable truthiness checks (e.g., `if (!ENV_VAR)`) to conditionally handle fallback logic for demo modes instead of checking against placeholder strings.

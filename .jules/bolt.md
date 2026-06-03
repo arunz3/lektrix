@@ -1,0 +1,3 @@
+## 2025-05-18 - Parallelizing PDF processing
+**Learning:** For client-side PDF generation like converting multiple images to a single PDF, performing `arrayBuffer()` reads and image embeddings sequentially (`await` in a `for` loop) is an I/O and processing bottleneck. The `pdf-lib` methods (`embedJpg`, `embedPng`) and file I/O operations are independent of each other until they are placed on the page.
+**Action:** Use `Promise.all()` to parallelize independent asynchronous operations (like reading files and embedding images) first, and then sequentially add the resolved images to pages to preserve the correct order. This reduces the total processing time significantly, especially for a large number of images.

@@ -700,9 +700,13 @@ const MergePDFTool = () => {
     setStatus('loading');
     try {
       const mergedPdf = await PDFDocument.create();
-      for (const f of files) {
+      // Bolt: Parallelize file reading and PDF parsing for faster merging
+      const loadedPdfs = await Promise.all(files.map(async (f) => {
         const arrayBuffer = await f.file.arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
+        return await PDFDocument.load(arrayBuffer);
+      }));
+      // Process sequentially to preserve order
+      for (const pdf of loadedPdfs) {
         const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
         copiedPages.forEach((page) => mergedPdf.addPage(page));
       }
@@ -1605,9 +1609,13 @@ const ImageToPDFTool = () => {
     setStatus('loading');
     try {
       const pdfDoc = await PDFDocument.create();
-      for (const imgData of files) {
+      // Bolt: Parallelize image loading and embedding for faster conversion
+      const embeddedImages = await Promise.all(files.map(async (imgData) => {
         const bytes = await imgData.file.arrayBuffer();
-        let img = imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+        return imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+      }));
+      // Process sequentially to preserve order
+      for (const img of embeddedImages) {
         const page = pdfDoc.addPage([img.width, img.height]);
         page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
       }

@@ -1,0 +1,3 @@
+## 2025-02-23 - Parallelize Independent PDF/Image Parsing and Embedding
+**Learning:** Sequential file reading, decoding (e.g. `arrayBuffer()`), and library-specific parsing (`PDFDocument.load()`, `pdfDoc.embedJpg()`) within synchronous `for...of` loops introduces massive unnecessary I/O delays. Despite being single-threaded, `pdf-lib` parsing operations can be parallelized because they operate on independent byte streams before being added to a shared document instance.
+**Action:** Always decouple independent I/O and parsing/embedding steps using `Promise.all()` from the final sequential page-copying loops when order preservation is required.

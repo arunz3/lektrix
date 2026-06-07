@@ -1,0 +1,4 @@
+## 2026-06-07 - Hardcoded Web3Forms API Key & Insecure Demo Fallback
+**Vulnerability:** A Web3Forms API access key was hardcoded directly into `src/App.jsx` as a constant. Additionally, "demo mode" fallback logic relied on comparing this constant to a specific hardcoded demo string, exposing both the key and the fallback mechanism in the client-side bundle.
+**Learning:** Hardcoding secrets in client-side code exposes them to anyone who inspects the application bundle, allowing unauthorized use of external services. Relying on hardcoded string matching for environment-specific logic (like demo modes) creates brittle security.
+**Prevention:** Always use environment variables (e.g., `import.meta.env.VITE_*` in Vite apps) for API keys, even if they seem "public", to allow rotation and environment-specific configuration. Use truthiness checks (e.g., `!ENV_VAR`) rather than specific string matching for fallback or demo modes.

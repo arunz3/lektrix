@@ -1,0 +1,3 @@
+## 2024-06-08 - Parallelizing I/O and PDF Operations
+**Learning:** Performance bottleneck specific to this codebase's architecture discovered. Processing operations like embedding images or parsing multiple PDFs sequentially via loops (`for const x of array`) significantly delays execution because each `arrayBuffer()` and subsequent async operation wait for the prior one to complete.
+**Action:** Always use `Promise.all` to parallelize independent asynchronous `pdf-lib` and I/O file operations before sequentially processing the results to preserve order.

@@ -56,7 +56,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLi
 
 // --- Feedback Modal ---
 
-const WEB3FORMS_ACCESS_KEY = "3a8827c3-38ee-46c3-9f6d-94f9ce6cb0ca"; // Web3Forms access key
+const WEB3FORMS_ACCESS_KEY = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY; // Web3Forms access key
 
 const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryChange }) => {
   const [rating, setRating] = useState(5);
@@ -80,7 +80,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
     setErrorMessage("");
 
     // If using the default placeholder demo key, simulate a successful submission for demonstration
-    if (WEB3FORMS_ACCESS_KEY === "7a83d366-beae-46b0-9b4b-488cb95b1dc0") {
+    if (!WEB3FORMS_ACCESS_KEY) {
       setTimeout(() => {
         setStatus("success");
       }, 800);
@@ -128,7 +128,8 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
         >
           <button
             onClick={handleClose}
-            className="absolute top-6 right-6 text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer"
+            className="absolute top-6 right-6 text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent"
+            aria-label="Close Feedback Modal"
           >
             <X size={20} />
           </button>
@@ -142,9 +143,9 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto font-medium">
                 Your feedback has been received. We truly appreciate your support in making Lektrix better!
               </p>
-              {WEB3FORMS_ACCESS_KEY === "7a83d366-beae-46b0-9b4b-488cb95b1dc0" && (
+              {!WEB3FORMS_ACCESS_KEY && (
                 <div className="text-[11px] bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 p-3 rounded-xl mx-auto max-w-sm text-left">
-                  ⚡ <b>Demo Mode Active:</b> Replace <code className="bg-amber-500/20 px-1 rounded font-mono">WEB3FORMS_ACCESS_KEY</code> in App.jsx with your free key from <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline font-bold">web3forms.com</a> to receive live emails!
+                  ⚡ <b>Demo Mode Active:</b> Add <code className="bg-amber-500/20 px-1 rounded font-mono">VITE_WEB3FORMS_ACCESS_KEY</code> in .env with your free key from <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline font-bold">web3forms.com</a> to receive live emails!
                 </div>
               )}
               <button
@@ -200,9 +201,10 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                         key={star}
                         type="button"
                         onClick={() => setRating(star)}
-                        className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                        className={`p-1.5 rounded-lg transition-all cursor-pointer focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent ${
                           star <= rating ? "text-amber-400" : "text-gray-200 dark:text-slate-700 hover:text-amber-400/50"
                         }`}
+                        aria-label={`Rate ${star} stars`}
                       >
                         <Star size={26} fill={star <= rating ? "currentColor" : "none"} />
                       </button>
@@ -249,7 +251,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                     <div>{errorMessage}</div>
                     {errorMessage.toLowerCase().includes("key") && (
                       <div className="text-[11px] text-red-400 mt-1 font-normal">
-                        Note: Get your free access key from <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline font-bold">web3forms.com</a> and paste it into <code className="bg-red-500/20 px-1 rounded font-mono">WEB3FORMS_ACCESS_KEY</code> in App.jsx.
+                        Note: Get your free access key from <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline font-bold">web3forms.com</a> and paste it into <code className="bg-red-500/20 px-1 rounded font-mono">VITE_WEB3FORMS_ACCESS_KEY</code> in .env.
                       </div>
                     )}
                   </div>
@@ -473,7 +475,8 @@ const FileUpload = ({
                   </div>
                   <button
                     onClick={() => removeFile(file.id)}
-                    className="p-2 text-gray-300 dark:text-slate-600 hover:text-red-500 transition-colors"
+                    className="p-2 text-gray-300 dark:text-slate-600 hover:text-red-500 transition-colors focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent"
+                    aria-label="Remove File"
                   >
                     <X size={18} />
                   </button>
@@ -700,9 +703,13 @@ const MergePDFTool = () => {
     setStatus('loading');
     try {
       const mergedPdf = await PDFDocument.create();
-      for (const f of files) {
+      // Bolt: Parallelize file reading and PDF parsing for faster merging
+      const loadedPdfs = await Promise.all(files.map(async (f) => {
         const arrayBuffer = await f.file.arrayBuffer();
-        const pdf = await PDFDocument.load(arrayBuffer);
+        return await PDFDocument.load(arrayBuffer);
+      }));
+      // Process sequentially to preserve order
+      for (const pdf of loadedPdfs) {
         const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
         copiedPages.forEach((page) => mergedPdf.addPage(page));
       }
@@ -999,8 +1006,8 @@ const RotatePDFTool = () => {
                           className="max-w-[80%] max-h-[80%] object-contain shadow-sm"
                         />
                         <div className="absolute inset-0 bg-gray-900/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                          <button onClick={() => rotatePage(i, -90)} className="p-2 bg-white shadow-lg rounded-full text-gray-900 hover:text-accent hover:scale-110 transition-all"><RotateCcw size={16} /></button>
-                          <button onClick={() => rotatePage(i, 90)} className="p-2 bg-white shadow-lg rounded-full text-gray-900 hover:text-accent hover:scale-110 transition-all"><RotateCw size={16} /></button>
+                          <button onClick={() => rotatePage(i, -90)} className="p-2 bg-white shadow-lg rounded-full text-gray-900 hover:text-accent hover:scale-110 transition-all focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent" aria-label="Rotate Page Left"><RotateCcw size={16} /></button>
+                          <button onClick={() => rotatePage(i, 90)} className="p-2 bg-white shadow-lg rounded-full text-gray-900 hover:text-accent hover:scale-110 transition-all focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent" aria-label="Rotate Page Right"><RotateCw size={16} /></button>
                         </div>
                       </div>
                       <div className="flex justify-center text-[10px] font-bold text-gray-400">
@@ -1605,9 +1612,13 @@ const ImageToPDFTool = () => {
     setStatus('loading');
     try {
       const pdfDoc = await PDFDocument.create();
-      for (const imgData of files) {
+      // Bolt: Parallelize image loading and embedding for faster conversion
+      const embeddedImages = await Promise.all(files.map(async (imgData) => {
         const bytes = await imgData.file.arrayBuffer();
-        let img = imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+        return imgData.file.type === 'image/jpeg' ? await pdfDoc.embedJpg(bytes) : await pdfDoc.embedPng(bytes);
+      }));
+      // Process sequentially to preserve order
+      for (const img of embeddedImages) {
         const page = pdfDoc.addPage([img.width, img.height]);
         page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
       }

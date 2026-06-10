@@ -145,7 +145,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
               </p>
               {!WEB3FORMS_ACCESS_KEY && (
                 <div className="text-[11px] bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 p-3 rounded-xl mx-auto max-w-sm text-left">
-                  ⚡ <b>Demo Mode Active:</b> Add <code className="bg-amber-500/20 px-1 rounded font-mono">VITE_WEB3FORMS_ACCESS_KEY</code> in .env with your free key from <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline font-bold">web3forms.com</a> to receive live emails!
+                  ⚡ <b>Demo Mode Active:</b> Add <code className="bg-amber-500/20 px-1 rounded font-mono">VITE_WEB3FORMS_ACCESS_KEY</code> in .env with your free key from <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer" className="underline font-bold">web3forms.com</a> to receive live emails!
                 </div>
               )}
               <button
@@ -251,7 +251,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                     <div>{errorMessage}</div>
                     {errorMessage.toLowerCase().includes("key") && (
                       <div className="text-[11px] text-red-400 mt-1 font-normal">
-                        Note: Get your free access key from <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline font-bold">web3forms.com</a> and paste it into <code className="bg-red-500/20 px-1 rounded font-mono">VITE_WEB3FORMS_ACCESS_KEY</code> in .env.
+                        Note: Get your free access key from <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer" className="underline font-bold">web3forms.com</a> and paste it into <code className="bg-red-500/20 px-1 rounded font-mono">VITE_WEB3FORMS_ACCESS_KEY</code> in .env.
                       </div>
                     )}
                   </div>

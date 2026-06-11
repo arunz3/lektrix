@@ -1,0 +1,3 @@
+## 2024-06-11 - FileUpload component accessibility improvement
+**Learning:** The `FileUpload` component inside `src/App.jsx` contained action buttons ("Add more" and "Clear all") which lacked visual focus indicators when navigating using a keyboard, failing a common accessibility requirement. The specific Tailwind utility classes for consistent focus in this app seem to be `focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent`.
+**Action:** Always ensure that any interactive elements (`button`, `a`, `input`, etc.), particularly inside commonly reused UI components like drag-and-drop file uploaders, have defined focus states using consistent Tailwind utility classes.

@@ -426,14 +426,14 @@ const FileUpload = ({
               {multiple && (
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-xs font-bold text-accent hover:text-accent-hover flex items-center gap-1 transition-colors"
+                  className="text-xs font-bold text-accent hover:text-accent-hover flex items-center gap-1 transition-colors focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent rounded-sm px-1"
                 >
                   <Plus size={14} /> Add more
                 </button>
               )}
               <button
                 onClick={clearAll}
-                className="text-xs font-bold text-gray-400 hover:text-red-500 transition-colors"
+                className="text-xs font-bold text-gray-400 hover:text-red-500 transition-colors focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent rounded-sm px-1"
               >
                 Clear all
               </button>

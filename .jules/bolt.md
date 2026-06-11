@@ -1,0 +1,3 @@
+## 2026-06-11 - Chunked Concurrency for PDF Canvas Rendering
+**Learning:** For client-side PDF optimization operations (like "High" compression or Image embedding), parallelizing `canvas.render()` or `pdfDoc.embedJpg()` across all pages using `Promise.all` can cause browser Out-Of-Memory (OOM) errors and crash the tab on large PDFs. However, purely sequential processing is too slow.
+**Action:** Implement "chunked concurrency". Batch asynchronous operations into small chunks (e.g., 3-5 pages at a time) and use `Promise.all` on each chunk sequentially. This bounds memory usage while significantly improving processing speed over sequential loops.

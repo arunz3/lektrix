@@ -365,8 +365,13 @@ const FileUpload = ({
   }, []);
 
   const handleFiles = (newFiles) => {
-    const fileList = Array.from(newFiles).map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
+    const limit = maxFiles || Infinity;
+    const remainingCapacity = multiple ? limit - files.length : 1;
+    if (remainingCapacity <= 0) return;
+
+    const filesToProcess = Array.from(newFiles).slice(0, remainingCapacity);
+    const fileList = filesToProcess.map(file => ({
+      id: (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : Math.random().toString(36).substring(2, 9),
       file: file,
       name: file.name,
       size: formatSize(file.size),
@@ -374,10 +379,9 @@ const FileUpload = ({
     }));
 
     if (multiple) {
-      const combined = [...files, ...fileList].slice(0, maxFiles);
-      onFilesChange(combined);
+      onFilesChange([...files, ...fileList]);
     } else {
-      onFilesChange(fileList.slice(0, 1));
+      onFilesChange(fileList);
     }
   };
 

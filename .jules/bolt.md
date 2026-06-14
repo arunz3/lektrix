@@ -1,0 +1,3 @@
+## 2024-06-14 - Parallelize PDF page rendering for Image Conversion and High Compression
+**Learning:** Sequential `pdf.getPage` and `page.render` within `for` loops cause bottlenecks when generating thumbnails or performing conversions (like PDF to Image or High Compression). While chunking or parallelizing these operations using `Promise.all` can significantly improve performance, we must be careful with concurrency limits to avoid Out-Of-Memory (OOM) errors, especially for canvas operations.
+**Action:** Use batching (e.g., chunk size of 3-5 pages) and `Promise.all` to parallelize canvas rendering operations in `PDF to Image` or `Compress PDF` functions to reduce execution time without crashing the browser.

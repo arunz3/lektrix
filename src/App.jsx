@@ -366,7 +366,7 @@ const FileUpload = ({
 
   const handleFiles = (newFiles) => {
     const fileList = Array.from(newFiles).map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
+      id: (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : Math.random().toString(36).substring(2, 9),
       file: file,
       name: file.name,
       size: formatSize(file.size),

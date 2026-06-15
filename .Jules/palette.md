@@ -1,0 +1,3 @@
+## 2024-06-15 - Missing ARIA label on Feedback button with conditionally hidden text
+**Learning:** Buttons that contain text hidden on mobile screens (e.g., using `hidden sm:inline` in Tailwind) need an `aria-label` to ensure screen reader users on mobile devices can still understand the button's purpose. If the text is hidden visually, it might also be hidden from screen readers depending on how `hidden` is implemented, so providing an explicit `aria-label` is a robust way to ensure accessibility.
+**Action:** Always add an `aria-label` to buttons that use Tailwind's responsive display classes (like `hidden sm:inline`) to hide text content on smaller screens.

@@ -221,6 +221,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  maxLength={100}
                   placeholder="your@email.com (for replies)"
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-accent text-sm transition-colors font-medium"
                 />
@@ -235,6 +236,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                   rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                  maxLength={2000}
                   placeholder={
                     category === "Bug Report"
                       ? "What happened? How can we reproduce it?"

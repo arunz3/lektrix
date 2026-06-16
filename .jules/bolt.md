@@ -1,0 +1,3 @@
+## 2025-02-24 - Parallel Canvas Rendering for Client-Side PDF Generation
+**Learning:** For client-side PDF tasks like compressing, replacing a sequential `page.render()` loop with a full `Promise.all()` over all pages can cause severe Out-of-Memory (OOM) errors and crash the browser on large PDFs due to excessive simultaneous canvas memory allocation.
+**Action:** Always implement a limited concurrency (chunking) approach for client-side PDF canvas rendering. Group pages into small batches (e.g., 3-5 pages), process each batch with `Promise.all()`, and then sequentially add the results to preserve order while keeping peak memory usage safe.

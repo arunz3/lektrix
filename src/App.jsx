@@ -365,7 +365,17 @@ const FileUpload = ({
   }, []);
 
   const handleFiles = (newFiles) => {
-    const fileList = Array.from(newFiles).map(file => ({
+    let filesToProcess = Array.from(newFiles);
+
+    // Prevent client-side DoS/OOM by slicing the array BEFORE processing and generating expensive Object URLs
+    if (multiple) {
+      const availableSlots = maxFiles !== undefined ? Math.max(0, maxFiles - files.length) : filesToProcess.length;
+      filesToProcess = filesToProcess.slice(0, availableSlots);
+    } else {
+      filesToProcess = filesToProcess.slice(0, 1);
+    }
+
+    const fileList = filesToProcess.map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       file: file,
       name: file.name,
@@ -374,10 +384,9 @@ const FileUpload = ({
     }));
 
     if (multiple) {
-      const combined = [...files, ...fileList].slice(0, maxFiles);
-      onFilesChange(combined);
+      onFilesChange([...files, ...fileList]);
     } else {
-      onFilesChange(fileList.slice(0, 1));
+      onFilesChange(fileList);
     }
   };
 

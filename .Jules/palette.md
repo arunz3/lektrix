@@ -1,0 +1,3 @@
+## 2024-05-15 - [A11y Issue: Feedback Button on Mobile]
+**Learning:** The floating feedback button in the bottom right corner hides its text label (`<span className="hidden sm:inline">`) on mobile devices to save screen space, essentially turning it into an icon-only button for mobile users. However, it lacks an `aria-label` attribute on the parent `<button>`, meaning mobile screen readers announce it poorly (possibly just "button" or by reading the SVG, which may not be informative).
+**Action:** Always ensure that buttons with conditionally hidden text labels have a fallback `aria-label` or visually-hidden text, especially when the icon is the only visible indicator on certain screen sizes.

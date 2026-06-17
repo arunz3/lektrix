@@ -1,0 +1,3 @@
+## 2025-05-18 - Client-Side PDF Generation Concurrency
+**Learning:** Performing `page.render()` and `pdfDoc.embedJpg()` fully in parallel for large PDFs causes Out-Of-Memory (OOM) errors in the browser. However, doing them strictly sequentially is too slow.
+**Action:** Use a "chunked concurrency" approach (e.g., batches of 3-5 pages via `Promise.all()`) to speed up independent async processing, then apply the results sequentially to the final PDF document to preserve order and manage memory.

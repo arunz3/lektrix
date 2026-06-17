@@ -222,6 +222,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com (for replies)"
+                  maxLength={255}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-accent text-sm transition-colors font-medium"
                 />
               </div>
@@ -240,6 +241,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                       ? "What happened? How can we reproduce it?"
                       : "What feature or idea would you like to see?"
                   }
+                  maxLength={2000}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-accent text-sm transition-colors resize-none font-medium"
                 ></textarea>
               </div>
@@ -365,7 +367,10 @@ const FileUpload = ({
   }, []);
 
   const handleFiles = (newFiles) => {
-    const fileList = Array.from(newFiles).map(file => ({
+    const sliceLimit = multiple ? (maxFiles !== undefined ? Math.max(0, maxFiles - files.length) : undefined) : 1;
+    const filesToProcess = Array.from(newFiles).slice(0, sliceLimit);
+
+    const fileList = filesToProcess.map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       file: file,
       name: file.name,
@@ -374,10 +379,10 @@ const FileUpload = ({
     }));
 
     if (multiple) {
-      const combined = [...files, ...fileList].slice(0, maxFiles);
+      const combined = [...files, ...fileList];
       onFilesChange(combined);
     } else {
-      onFilesChange(fileList.slice(0, 1));
+      onFilesChange(fileList);
     }
   };
 
@@ -852,7 +857,7 @@ const SplitPDFTool = () => {
               <div className="space-y-6 pt-4 border-t border-gray-100">
                 <div>
                   <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-1">Page Selection</label>
-                  <input type="text" placeholder="e.g. 1, 3, 5-8" value={pagesInput} onChange={(e) => setPagesInput(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-accent transition-all" />
+                  <input type="text" placeholder="e.g. 1, 3, 5-8" value={pagesInput} onChange={(e) => setPagesInput(e.target.value)} maxLength={100} className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-accent transition-all" />
                   <p className="text-[10px] text-gray-400 mt-2 px-1">Total pages: {pageCount}</p>
                 </div>
                 <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
@@ -1210,11 +1215,11 @@ const MetadataEditorTool = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Title</label>
-                    <input type="text" value={metadata.title} onChange={e => setMetadata({...metadata, title: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. Annual Report" />
+                    <input type="text" value={metadata.title} onChange={e => setMetadata({...metadata, title: e.target.value})} maxLength={255} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. Annual Report" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Author</label>
-                    <input type="text" value={metadata.author} onChange={e => setMetadata({...metadata, author: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. John Doe" />
+                    <input type="text" value={metadata.author} onChange={e => setMetadata({...metadata, author: e.target.value})} maxLength={255} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. John Doe" />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -1344,7 +1349,7 @@ const ProtectPDFTool = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest mb-2 px-1">Password</label>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent transition-all dark:text-white" />
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} maxLength={128} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent transition-all dark:text-white" />
                   </div>
                   {mode === 'protect' && (
                     <div>
@@ -1449,7 +1454,7 @@ const WatermarkPDFTool = () => {
               <div className="space-y-6 pt-4 border-t border-gray-100 dark:border-slate-800">
                 {type === 'text' ? (
                   <div className="space-y-4">
-                    <input type="text" value={wmText} onChange={(e) => setWmText(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent dark:text-white" placeholder="Watermark text" />
+                    <input type="text" value={wmText} onChange={(e) => setWmText(e.target.value)} maxLength={100} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent dark:text-white" placeholder="Watermark text" />
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Size: {fontSize}px</label>

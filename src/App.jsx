@@ -365,8 +365,18 @@ const FileUpload = ({
   }, []);
 
   const handleFiles = (newFiles) => {
-    const fileList = Array.from(newFiles).map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
+    let limit;
+    if (multiple) {
+      limit = maxFiles !== undefined ? Math.max(0, maxFiles - files.length) : undefined;
+    } else {
+      limit = 1;
+    }
+
+    // Bolt: Slice the array *before* mapping to prevent unnecessary object URL creation
+    // and UUID generation for files that would be dropped anyway, saving memory
+    const fileList = Array.from(newFiles).slice(0, limit).map(file => ({
+      // Fallback for ID generation to support demo modes/older browsers, though crypto.randomUUID is preferred where possible
+      id: (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : Math.random().toString(36).substring(2, 9),
       file: file,
       name: file.name,
       size: formatSize(file.size),
@@ -374,10 +384,10 @@ const FileUpload = ({
     }));
 
     if (multiple) {
-      const combined = [...files, ...fileList].slice(0, maxFiles);
+      const combined = [...files, ...fileList];
       onFilesChange(combined);
     } else {
-      onFilesChange(fileList.slice(0, 1));
+      onFilesChange(fileList);
     }
   };
 

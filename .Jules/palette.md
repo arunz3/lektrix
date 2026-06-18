@@ -1,0 +1,3 @@
+## 2025-05-18 - Tool Card Accessibility Improvement
+**Learning:** Core navigation cards in the app were implemented as generic `div` elements with `onClick` handlers. This pattern prevented fundamental accessibility features like keyboard navigation (Tab targeting) and standard browser link behaviors (e.g., right-click to open in new tab).
+**Action:** Replace navigational `div` elements with semantic `Link` (or `<a>`) components from the router, and add appropriate focus styles (e.g., `focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent block`) to ensure they are fully accessible to screen readers and keyboard users.

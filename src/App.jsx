@@ -524,10 +524,10 @@ const LandingPage = () => {
               { id: 'split', name: "Split PDF", icon: <Scissors className="w-6 h-6 mb-3" />, desc: "Extract specific pages" },
               { id: 'compress', name: "Compress PDF", icon: <Minimize2 className="w-6 h-6 mb-3" />, desc: "Reduce file size" },
             ].map((tool) => (
-              <div key={tool.id} onClick={() => navigate(`/tools/${tool.id}`)} className="group bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 p-6 rounded-xl shadow-sm hover:shadow-md dark:hover:border-slate-700 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between h-40">
+              <Link key={tool.id} to={`/tools/${tool.id}`} className="group bg-white dark:bg-[#1e293b] border border-gray-100 dark:border-slate-800 p-6 rounded-xl shadow-sm hover:shadow-md dark:hover:border-slate-700 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between h-40 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent">
                 <div className="text-gray-600 dark:text-slate-400 group-hover:text-accent dark:group-hover:text-accent transition-colors duration-300">{tool.icon}</div>
                 <div><h3 className="font-semibold text-gray-900 dark:text-white mb-1">{tool.name}</h3><p className="text-xs text-gray-500 dark:text-slate-500">{tool.desc}</p></div>
-              </div>
+              </Link>
             ))}
           </div>
           <div className="mt-8 flex justify-center">
@@ -542,7 +542,6 @@ const LandingPage = () => {
 };
 
 const ToolsPage = () => {
-  const navigate = useNavigate();
   const tools = [
   { id: 'image-to-pdf', name: "Image to PDF", icon: <ImageIcon className="w-6 h-6" />, desc: "Convert images to PDF", path: "/tools/image-to-pdf" },
   { id: 'merge', name: "Merge PDF", icon: <Combine className="w-6 h-6" />, desc: "Combine multiple PDFs", path: "/tools/merge" },
@@ -564,13 +563,13 @@ const ToolsPage = () => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {tools.map((tool) => (
-          <div key={tool.id} onClick={() => navigate(tool.path)} className="group bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 p-8 rounded-2xl shadow-sm hover:shadow-lg dark:hover:border-slate-700 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between h-52">
+          <Link key={tool.id} to={tool.path} className="group bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 p-8 rounded-2xl shadow-sm hover:shadow-lg dark:hover:border-slate-700 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between h-52 focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent">
             <div className="text-gray-600 dark:text-slate-400 group-hover:text-accent dark:group-hover:text-accent transition-colors duration-300">{tool.icon}</div>
             <div>
               <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-1">{tool.name}</h3>
               <p className="text-sm text-gray-500 dark:text-slate-500">{tool.desc}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </motion.div>

@@ -1,0 +1,4 @@
+## 2025-06-19 - Client-side DoS Risk in File Upload Processing
+**Vulnerability:** Client-side Denial of Service (DoS) / Out-of-Memory (OOM) risk during file upload handling due to unbounded creation of object URLs.
+**Learning:** Generating object URLs (`URL.createObjectURL`) for every uploaded file *before* slicing the array to the allowed limits consumes excessive memory, as browsers immediately map files into memory for those URLs, making it vulnerable to malicious large batch uploads.
+**Prevention:** To prevent client-side DoS/Out-of-Memory errors during mass file uploads, arrays must be sliced to constraint limits (e.g., `maxFiles`) *before* executing `URL.createObjectURL` on the items.

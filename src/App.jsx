@@ -1827,7 +1827,8 @@ const Layout = ({ children }) => {
       <FeedbackModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} category={modalCategory} onCategoryChange={setModalCategory} />
       <button
         onClick={() => openFeedback("Suggestion")}
-        className="fixed bottom-6 right-6 z-40 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 text-sm font-semibold hover:scale-105 active:scale-95 transition-all border border-slate-800 dark:border-white/20 group cursor-pointer"
+        className="fixed bottom-6 right-6 z-40 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 text-sm font-semibold hover:scale-105 active:scale-95 transition-all border border-slate-800 dark:border-white/20 group cursor-pointer focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent"
+        aria-label="Open Feedback"
       >
         <MessageSquare size={18} className="text-accent group-hover:rotate-12 transition-transform" />
         <span className="hidden sm:inline font-bold">Feedback</span>

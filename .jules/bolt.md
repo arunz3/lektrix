@@ -1,0 +1,3 @@
+## 2025-06-19 - Parallel Rendering in `pdf-lib` and `pdf.js`
+**Learning:** Sequential processing in client-side PDF tasks (like rendering and embedding) is slow, but unbounded parallelization (e.g. `Promise.all` on 100 pages) causes Out-of-Memory (OOM) errors and crashes the browser tab.
+**Action:** Use chunked parallelism (e.g., batch sizes of 3-5 pages) with `Promise.all` to balance performance gains and memory constraints, and map results sequentially to preserve page order.

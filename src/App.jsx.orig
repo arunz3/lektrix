@@ -290,10 +290,10 @@ const Logo = ({ size = "normal", showText = true, className = "" }) => {
   return (
     <div className={`flex items-center gap-1.5 sm:gap-2 group cursor-pointer flex-shrink-0 ${className}`}>
       <div className="relative flex items-center justify-center flex-shrink-0">
-        <Zap 
-          size={iconSize} 
-          fill="currentColor" 
-          className="text-accent transition-transform group-hover:scale-110" 
+        <Zap
+          size={iconSize}
+          fill="currentColor"
+          className="text-accent transition-transform group-hover:scale-110"
         />
       </div>
       {showText && (
@@ -402,7 +402,7 @@ const FileUpload = ({
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
           onDrop={onDrop}
-          className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-2xl py-16 px-6 transition-all cursor-pointer group focus-within:ring-2 focus-within:outline-none focus-within:ring-accent ${isDragging ? 'border-accent bg-accent/5' : 'border-gray-100 dark:border-slate-800/60 bg-gray-50/50 dark:bg-[#1e293b]/30 hover:border-accent dark:hover:border-accent hover:bg-accent/5 dark:hover:bg-accent/5'}`}
+          className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-2xl py-16 px-6 transition-all cursor-pointer group ${isDragging ? 'border-accent bg-accent/5' : 'border-gray-100 dark:border-slate-800/60 bg-gray-50/50 dark:bg-[#1e293b]/30 hover:border-accent dark:hover:border-accent hover:bg-accent/5 dark:hover:bg-accent/5'}`}
         >
           <div className={`bg-gray-100 dark:bg-[#1e293b] group-hover:bg-accent/10 p-4 rounded-full mb-4 transition-colors ${isDragging ? 'bg-accent/10 text-accent' : 'text-slate-400 dark:text-slate-500'}`}>
             <Icon size={32} className={isDragging ? 'text-accent' : 'group-hover:text-accent'} />
@@ -413,7 +413,7 @@ const FileUpload = ({
             type="file"
             multiple={multiple}
             accept={accept}
-            className="sr-only"
+            className="hidden"
             onChange={(e) => handleFiles(e.target.files)}
             ref={fileInputRef}
           />
@@ -508,7 +508,7 @@ const LandingPage = () => {
           <span className="text-accent">Right in your browser.</span>
         </h1>
         <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mb-10 leading-relaxed font-medium">
-          Merge, split, compress, convert, and sign PDFs — fully offline. 
+          Merge, split, compress, convert, and sign PDFs — fully offline.
           No uploads. No tracking. Lightning fast.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -589,14 +589,14 @@ const AboutPage = () => {
       </h1>
       <div className="space-y-6 text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
         <p>
-          lektrix is a privacy-first PDF toolkit that runs entirely in your browser. 
+          lektrix is a privacy-first PDF toolkit that runs entirely in your browser.
           Unlike traditional online PDF tools, we never upload your documents to a server.
         </p>
         <p className="font-semibold text-slate-900 dark:text-white">
           No uploads. No tracking. Your files stay on your device.
         </p>
         <p>
-          By leveraging modern web technologies like WebAssembly and client-side processing, 
+          By leveraging modern web technologies like WebAssembly and client-side processing,
           lektrix provides professional-grade PDF manipulation without the security risks of cloud-based services.
         </p>
       </div>
@@ -1173,7 +1173,7 @@ const MetadataEditorTool = () => {
       pdfDoc.setKeywords(metadata.keywords.split(',').map(k => k.trim()));
       pdfDoc.setCreator(metadata.creator);
       pdfDoc.setProducer(metadata.producer);
-      
+
       const pdfBytes = await pdfDoc.save();
       setResultUrl(URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' })));
       setStatus('success');
@@ -1204,7 +1204,7 @@ const MetadataEditorTool = () => {
         ) : (
           <div className="space-y-8">
             <FileUpload onFilesChange={setFiles} files={files} label="PDF file" />
-            
+
             {files.length > 0 && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 gap-4 p-4 bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-100 dark:border-slate-800">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1266,7 +1266,7 @@ const ProtectPDFTool = () => {
     try {
       const arrayBuffer = await files[0].file.arrayBuffer();
       const pdfBytes = new Uint8Array(arrayBuffer);
-      
+
       let resultBytes;
       if (mode === 'protect') {
         resultBytes = await encryptPDF(pdfBytes, password);
@@ -1275,7 +1275,7 @@ const ProtectPDFTool = () => {
           const loadingTask = pdfjsLib.getDocument({ data: pdfBytes, password });
           const pdf = await loadingTask.promise;
           const pdfDoc = await PDFDocument.create();
-          
+
           for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const viewport = page.getViewport({ scale: 2 });
@@ -1284,7 +1284,7 @@ const ProtectPDFTool = () => {
             canvas.height = viewport.height;
             canvas.width = viewport.width;
             await page.render({ canvasContext: context, viewport }).promise;
-            
+
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
             const imgBytes = await fetch(imgData).then(res => res.arrayBuffer());
             const embeddedImg = await pdfDoc.embedJpg(imgBytes);
@@ -1301,13 +1301,13 @@ const ProtectPDFTool = () => {
           throw err;
         }
       }
-      
+
       setResultUrl(URL.createObjectURL(new Blob([resultBytes], { type: 'application/pdf' })));
       setStatus('success');
-    } catch (err) { 
+    } catch (err) {
       console.error(err);
-      setError('Operation failed. Ensure the PDF is not already corrupted.'); 
-      setStatus('error'); 
+      setError('Operation failed. Ensure the PDF is not already corrupted.');
+      setStatus('error');
     }
   };
 
@@ -1773,7 +1773,7 @@ const PDFToImageTool = () => {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="flex justify-between items-center px-1">
                     <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Select Pages ({selectedPages.size})</label>
@@ -1828,7 +1828,6 @@ const Layout = ({ children }) => {
       <button
         onClick={() => openFeedback("Suggestion")}
         className="fixed bottom-6 right-6 z-40 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 text-sm font-semibold hover:scale-105 active:scale-95 transition-all border border-slate-800 dark:border-white/20 group cursor-pointer"
-        aria-label="Provide Feedback"
       >
         <MessageSquare size={18} className="text-accent group-hover:rotate-12 transition-transform" />
         <span className="hidden sm:inline font-bold">Feedback</span>
@@ -1849,17 +1848,17 @@ const Layout = ({ children }) => {
             </nav>
             <div className="flex items-center justify-end gap-1.5 sm:gap-3 md:gap-4 flex-shrink-0 md:flex-1">
               <ThemeToggle />
-              <a 
-                href="https://chai4.me/rarun" 
-                target="_blank" 
+              <a
+                href="https://chai4.me/rarun"
+                target="_blank"
                 rel="noopener noreferrer"
-                title="Support rarun on Chai4Me" 
+                title="Support rarun on Chai4Me"
                 className="inline-flex items-center justify-center bg-white dark:bg-slate-800 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm hover:scale-105 transition-all active:scale-95 flex-shrink-0"
               >
                 <img src="https://chai4.me/icons/wordmark.png" alt="Chai4Me" className="h-4 sm:h-6 md:h-7 object-contain dark:invert" />
               </a>
-              <a 
-                href="https://lektrix-img.pages.dev/" 
+              <a
+                href="https://lektrix-img.pages.dev/"
                 className="bg-accent hover:bg-accent-hover text-white px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-2 md:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all shadow-lg shadow-accent/20 active:scale-95 whitespace-nowrap flex-shrink-0 flex items-center"
               >
                 <span className="hidden sm:inline">try &gt;&nbsp;</span>Lektrix IMG
@@ -1994,7 +1993,7 @@ function AppContent() {
 
     const currentSeo = seoMap[location.pathname] || seoMap["/"];
     document.title = currentSeo.title;
-    
+
     let metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
       metaDesc.setAttribute('content', currentSeo.desc);

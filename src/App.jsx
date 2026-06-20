@@ -1051,18 +1051,30 @@ const CompressPDFTool = () => {
       const pdfDoc = await PDFDocument.create();
       if (level === 'high') {
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const viewport = page.getViewport({ scale: 1.5 });
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          canvas.height = viewport.height; canvas.width = viewport.width;
-          await page.render({ canvasContext: context, viewport }).promise;
-          const imgData = canvas.toDataURL('image/jpeg', 0.6);
-          const imgBytes = await fetch(imgData).then(res => res.arrayBuffer());
-          const embeddedImg = await pdfDoc.embedJpg(imgBytes);
-          const newPage = pdfDoc.addPage([viewport.width, viewport.height]);
-          newPage.drawImage(embeddedImg, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+        // Bolt: Limited concurrency to avoid OOM while parallelizing page rendering
+        const BATCH_SIZE = 4;
+        for (let i = 1; i <= pdf.numPages; i += BATCH_SIZE) {
+          const batch = [];
+          for (let j = i; j < i + BATCH_SIZE && j <= pdf.numPages; j++) {
+            batch.push((async () => {
+              const page = await pdf.getPage(j);
+              const viewport = page.getViewport({ scale: 1.5 });
+              const canvas = document.createElement('canvas');
+              const context = canvas.getContext('2d');
+              canvas.height = viewport.height; canvas.width = viewport.width;
+              await page.render({ canvasContext: context, viewport }).promise;
+              const imgData = canvas.toDataURL('image/jpeg', 0.6);
+              const imgBytes = await fetch(imgData).then(res => res.arrayBuffer());
+              return { j, viewport, imgBytes }; // preserve index for ordering
+            })());
+          }
+          const results = await Promise.all(batch);
+          // Process sequentially to preserve exact page order
+          for (const res of results.sort((a, b) => a.j - b.j)) {
+            const embeddedImg = await pdfDoc.embedJpg(res.imgBytes);
+            const newPage = pdfDoc.addPage([res.viewport.width, res.viewport.height]);
+            newPage.drawImage(embeddedImg, { x: 0, y: 0, width: res.viewport.width, height: res.viewport.height });
+          }
         }
       } else {
         const copiedPages = await pdfDoc.copyPages(srcDoc, srcDoc.getPageIndices());
@@ -1276,20 +1288,31 @@ const ProtectPDFTool = () => {
           const pdf = await loadingTask.promise;
           const pdfDoc = await PDFDocument.create();
           
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const viewport = page.getViewport({ scale: 2 });
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            await page.render({ canvasContext: context, viewport }).promise;
-            
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            const imgBytes = await fetch(imgData).then(res => res.arrayBuffer());
-            const embeddedImg = await pdfDoc.embedJpg(imgBytes);
-            const newPage = pdfDoc.addPage([viewport.width, viewport.height]);
-            newPage.drawImage(embeddedImg, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+          // Bolt: Limited concurrency to avoid OOM while parallelizing page rendering
+          const BATCH_SIZE = 4;
+          for (let i = 1; i <= pdf.numPages; i += BATCH_SIZE) {
+            const batch = [];
+            for (let j = i; j < i + BATCH_SIZE && j <= pdf.numPages; j++) {
+              batch.push((async () => {
+                const page = await pdf.getPage(j);
+                const viewport = page.getViewport({ scale: 2 });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                await page.render({ canvasContext: context, viewport }).promise;
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const imgBytes = await fetch(imgData).then(res => res.arrayBuffer());
+                return { j, viewport, imgBytes };
+              })());
+            }
+            const results = await Promise.all(batch);
+            for (const res of results.sort((a, b) => a.j - b.j)) {
+              const embeddedImg = await pdfDoc.embedJpg(res.imgBytes);
+              const newPage = pdfDoc.addPage([res.viewport.width, res.viewport.height]);
+              newPage.drawImage(embeddedImg, { x: 0, y: 0, width: res.viewport.width, height: res.viewport.height });
+            }
           }
           resultBytes = await pdfDoc.save();
         } catch (err) {

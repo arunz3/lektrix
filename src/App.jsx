@@ -365,7 +365,19 @@ const FileUpload = ({
   }, []);
 
   const handleFiles = (newFiles) => {
-    const fileList = Array.from(newFiles).map(file => ({
+    // 🛡️ Sentinel: Fix client-side OOM DoS by slicing incoming files BEFORE Object URL generation
+    let allowedNewFiles = Array.from(newFiles);
+
+    if (multiple) {
+      const limit = maxFiles !== undefined ? Math.max(0, maxFiles - files.length) : undefined;
+      if (limit !== undefined) {
+        allowedNewFiles = allowedNewFiles.slice(0, limit);
+      }
+    } else {
+      allowedNewFiles = allowedNewFiles.slice(0, 1);
+    }
+
+    const fileList = allowedNewFiles.map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       file: file,
       name: file.name,
@@ -374,10 +386,10 @@ const FileUpload = ({
     }));
 
     if (multiple) {
-      const combined = [...files, ...fileList].slice(0, maxFiles);
+      const combined = [...files, ...fileList];
       onFilesChange(combined);
     } else {
-      onFilesChange(fileList.slice(0, 1));
+      onFilesChange(fileList);
     }
   };
 

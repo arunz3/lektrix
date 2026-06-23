@@ -1,0 +1,4 @@
+## 2025-02-23 - Prevent Client-Side DoS via OOM in Mass File Uploads
+**Vulnerability:** The application was vulnerable to a client-side Denial of Service (DoS) due to Out-of-Memory (OOM) errors. When processing mass file uploads, the application iterated over the entire incoming file list and executed `URL.createObjectURL` for every image file *before* enforcing constraints (like `maxFiles`).
+**Learning:** `URL.createObjectURL` allocates memory in the browser for the Blob/File payload. If an unbounded number of files are uploaded, mapping over all of them to create object URLs before slicing them to `maxFiles` can lead to rapid memory exhaustion and browser crashes.
+**Prevention:** Always enforce constraints and limit array sizes (e.g., slicing to `maxFiles`) *before* executing memory-allocating operations like `URL.createObjectURL`. Handle undefined cases for limits dynamically (e.g., `Math.max(0, limit !== undefined ? limit - current : 0)`).

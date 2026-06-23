@@ -1,0 +1,3 @@
+## 2025-02-27 - Accessible drag and drop zones
+**Learning:** When building custom drag-and-drop file upload zones that wrap an `<input type="file">`, using Tailwind's `hidden` class on the input removes it from the accessibility tree, preventing keyboard navigation to the upload field.
+**Action:** Always use `className="sr-only"` on the file input to keep it visually hidden but available to screen readers and keyboard tabbing. Additionally, apply `focus-within:ring-2 focus-within:outline-none focus-within:ring-accent` to the parent `<label>` wrapper so that when the inner screen-reader-only input receives focus, a visible focus ring is displayed on the entire dropzone.

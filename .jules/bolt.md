@@ -1,0 +1,3 @@
+## 2024-05-24 - Parallelizing High-Level Compression Canvas Rendering
+**Learning:** For high-level PDF compression that depends on image-based rendering via `pdfjsLib`, running `page.render()` sequentially is extremely slow. Full parallelization (`Promise.all` across all pages) speeds this up but crashes the browser (Out of Memory/OOM) for large PDFs due to excessive canvas memory allocation.
+**Action:** Always use a chunked batching approach (e.g., 4 pages at a time) for parallel canvas operations to perfectly balance rendering speed and memory limits, and process the results sequentially to preserve page order within `pdf-lib`.

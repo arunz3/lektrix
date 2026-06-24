@@ -402,7 +402,7 @@ const FileUpload = ({
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
           onDrop={onDrop}
-          className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-2xl py-16 px-6 transition-all cursor-pointer group ${isDragging ? 'border-accent bg-accent/5' : 'border-gray-100 dark:border-slate-800/60 bg-gray-50/50 dark:bg-[#1e293b]/30 hover:border-accent dark:hover:border-accent hover:bg-accent/5 dark:hover:bg-accent/5'}`}
+          className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-2xl py-16 px-6 transition-all cursor-pointer group focus-within:ring-2 focus-within:outline-none focus-within:ring-accent ${isDragging ? 'border-accent bg-accent/5' : 'border-gray-100 dark:border-slate-800/60 bg-gray-50/50 dark:bg-[#1e293b]/30 hover:border-accent dark:hover:border-accent hover:bg-accent/5 dark:hover:bg-accent/5'}`}
         >
           <div className={`bg-gray-100 dark:bg-[#1e293b] group-hover:bg-accent/10 p-4 rounded-full mb-4 transition-colors ${isDragging ? 'bg-accent/10 text-accent' : 'text-slate-400 dark:text-slate-500'}`}>
             <Icon size={32} className={isDragging ? 'text-accent' : 'group-hover:text-accent'} />
@@ -413,7 +413,7 @@ const FileUpload = ({
             type="file"
             multiple={multiple}
             accept={accept}
-            className="hidden"
+            className="sr-only"
             onChange={(e) => handleFiles(e.target.files)}
             ref={fileInputRef}
           />
@@ -1827,7 +1827,8 @@ const Layout = ({ children }) => {
       <FeedbackModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} category={modalCategory} onCategoryChange={setModalCategory} />
       <button
         onClick={() => openFeedback("Suggestion")}
-        className="fixed bottom-6 right-6 z-40 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 text-sm font-semibold hover:scale-105 active:scale-95 transition-all border border-slate-800 dark:border-white/20 group cursor-pointer"
+        aria-label="Feedback"
+        className="fixed bottom-6 right-6 z-40 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-full shadow-2xl flex items-center gap-2 text-sm font-semibold hover:scale-105 active:scale-95 transition-all border border-slate-800 dark:border-white/20 group cursor-pointer focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent"
       >
         <MessageSquare size={18} className="text-accent group-hover:rotate-12 transition-transform" />
         <span className="hidden sm:inline font-bold">Feedback</span>

@@ -365,7 +365,19 @@ const FileUpload = ({
   }, []);
 
   const handleFiles = (newFiles) => {
-    const fileList = Array.from(newFiles).map(file => ({
+    const newFilesArray = Array.from(newFiles);
+
+    // Prevent client-side DoS/OOM by slicing the array to the allowed limit
+    // BEFORE calling URL.createObjectURL, handling potential undefined maxFiles.
+    const remainingSlots = multiple && maxFiles !== undefined
+      ? Math.max(0, maxFiles - files.length)
+      : undefined;
+
+    const allowedFiles = multiple
+      ? (remainingSlots !== undefined ? newFilesArray.slice(0, remainingSlots) : newFilesArray)
+      : newFilesArray.slice(0, 1);
+
+    const fileList = allowedFiles.map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       file: file,
       name: file.name,
@@ -374,10 +386,9 @@ const FileUpload = ({
     }));
 
     if (multiple) {
-      const combined = [...files, ...fileList].slice(0, maxFiles);
-      onFilesChange(combined);
+      onFilesChange([...files, ...fileList]);
     } else {
-      onFilesChange(fileList.slice(0, 1));
+      onFilesChange(fileList);
     }
   };
 

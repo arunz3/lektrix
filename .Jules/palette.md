@@ -1,0 +1,3 @@
+## 2024-11-20 - Ensure screen reader accessibility for responsive buttons
+**Learning:** When text inside a button is hidden on smaller screens using utility classes like `hidden sm:inline`, screen readers will not read the text on mobile devices unless an explicit `aria-label` is provided on the parent `<button>`.
+**Action:** Always add an explicit `aria-label` to the parent `<button>` when its visible text content is conditionally hidden using responsive classes.

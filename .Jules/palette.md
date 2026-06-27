@@ -1,0 +1,3 @@
+## 2025-02-23 - Improve FileUpload Keyboard Accessibility
+**Learning:** Custom drag-and-drop file upload zones that wrap an `<input type="file">` should not use `display: none` or `hidden` classes to hide the native input, as this removes it from the accessibility tree making it impossible for keyboard users to focus or interact with it.
+**Action:** Always use the `sr-only` class to hide the native input visually while keeping it in the DOM for screen readers and keyboard focus. Then apply `focus-within` styles (like `focus-within:ring-2 focus-within:outline-none focus-within:ring-accent`) on the parent wrapper or `<label>` element so that when the hidden input receives focus, the entire drop zone visibly highlights.

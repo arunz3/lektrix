@@ -1,0 +1,4 @@
+## 2025-02-28 - [URL.createObjectURL Out-of-Memory DOS Risk]
+**Vulnerability:** The application was calling `URL.createObjectURL(file)` on every dropped file before checking max array limits.
+**Learning:** During mass file uploads (e.g., dropping 1000 images), mapping `URL.createObjectURL` over the entire `newFiles` array before truncating to `maxFiles` limits creates massive memory spikes, crashing the browser tab with an Out-of-Memory (OOM) error before the limit check even applies.
+**Prevention:** To prevent client-side DoS/OOM errors during mass uploads, arrays must be explicitly sliced to constraint limits (e.g., `maxFiles`) *before* executing `URL.createObjectURL` on the items. And ensure the limit calculation handles undefined limits safely (e.g., `maxFiles !== undefined`).

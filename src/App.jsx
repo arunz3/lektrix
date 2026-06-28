@@ -219,6 +219,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                 </label>
                 <input
                   type="email"
+                  maxLength={100}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com (for replies)"
@@ -232,6 +233,7 @@ const FeedbackModal = ({ isOpen, onClose, category = "Suggestion", onCategoryCha
                 </label>
                 <textarea
                   required
+                  maxLength={1000}
                   rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
@@ -852,7 +854,7 @@ const SplitPDFTool = () => {
               <div className="space-y-6 pt-4 border-t border-gray-100">
                 <div>
                   <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-1">Page Selection</label>
-                  <input type="text" placeholder="e.g. 1, 3, 5-8" value={pagesInput} onChange={(e) => setPagesInput(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-accent transition-all" />
+                  <input type="text" maxLength={100} placeholder="e.g. 1, 3, 5-8" value={pagesInput} onChange={(e) => setPagesInput(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-accent transition-all" />
                   <p className="text-[10px] text-gray-400 mt-2 px-1">Total pages: {pageCount}</p>
                 </div>
                 <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
@@ -1210,20 +1212,20 @@ const MetadataEditorTool = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Title</label>
-                    <input type="text" value={metadata.title} onChange={e => setMetadata({...metadata, title: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. Annual Report" />
+                    <input type="text" maxLength={200} value={metadata.title} onChange={e => setMetadata({...metadata, title: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. Annual Report" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Author</label>
-                    <input type="text" value={metadata.author} onChange={e => setMetadata({...metadata, author: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. John Doe" />
+                    <input type="text" maxLength={100} value={metadata.author} onChange={e => setMetadata({...metadata, author: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. John Doe" />
                   </div>
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Subject</label>
-                  <input type="text" value={metadata.subject} onChange={e => setMetadata({...metadata, subject: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. Financial Data" />
+                  <input type="text" maxLength={200} value={metadata.subject} onChange={e => setMetadata({...metadata, subject: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. Financial Data" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest">Keywords (comma separated)</label>
-                  <input type="text" value={metadata.keywords} onChange={e => setMetadata({...metadata, keywords: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. report, stats, 2025" />
+                  <input type="text" maxLength={200} value={metadata.keywords} onChange={e => setMetadata({...metadata, keywords: e.target.value})} className="w-full bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-accent outline-none transition-all" placeholder="e.g. report, stats, 2025" />
                 </div>
               </motion.div>
             )}
@@ -1344,12 +1346,12 @@ const ProtectPDFTool = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest mb-2 px-1">Password</label>
-                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent transition-all dark:text-white" />
+                    <input type="password" maxLength={100} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent transition-all dark:text-white" />
                   </div>
                   {mode === 'protect' && (
                     <div>
                       <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest mb-2 px-1">Confirm Password</label>
-                      <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent transition-all dark:text-white" />
+                      <input type="password" maxLength={100} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent transition-all dark:text-white" />
                     </div>
                   )}
                 </div>
@@ -1449,7 +1451,7 @@ const WatermarkPDFTool = () => {
               <div className="space-y-6 pt-4 border-t border-gray-100 dark:border-slate-800">
                 {type === 'text' ? (
                   <div className="space-y-4">
-                    <input type="text" value={wmText} onChange={(e) => setWmText(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent dark:text-white" placeholder="Watermark text" />
+                    <input type="text" maxLength={100} value={wmText} onChange={(e) => setWmText(e.target.value)} className="w-full px-4 py-3.5 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl outline-none focus:border-accent dark:text-white" placeholder="Watermark text" />
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest px-1">Size: {fontSize}px</label>

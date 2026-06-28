@@ -1,0 +1,3 @@
+## 2024-10-24 - Accessible Drag and Drop Zones
+**Learning:** Using `display: none` (or `hidden` in Tailwind) on file inputs removes them from the accessibility tree, breaking keyboard navigation for screen reader users on custom dropzones.
+**Action:** Always use `.sr-only` instead of `.hidden` on the input, and use `.focus-within` on the parent container (e.g., `<label>`) to show a visible focus ring when the hidden input receives focus via keyboard navigation.

@@ -1,0 +1,3 @@
+## 2024-05-24 - Parallelize PDF compression with chunking
+**Learning:** For client-side PDF processing, running `page.render()` and `pdfDoc.embedJpg()` sequentially blocks the main thread excessively on large documents. Parallelizing everything at once via `Promise.all` can cause Out-Of-Memory (OOM) errors. Chunking the pages into limited batches (e.g., 3-5 pages) and processing each batch in parallel provides an optimal balance between performance and memory usage, avoiding sequential blocking while respecting browser resource limits.
+**Action:** When implementing heavy page-by-page PDF operations (like rasterizing and embedding images), always process pages in small parallel batches rather than sequentially or fully concurrently.

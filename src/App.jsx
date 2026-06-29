@@ -323,7 +323,7 @@ const ThemeToggle = () => {
   return (
     <button
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-      className="p-1.5 sm:p-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:text-accent dark:hover:text-accent transition-all shadow-sm active:scale-90 flex-shrink-0 flex items-center justify-center"
+      className="p-1.5 sm:p-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400 hover:text-accent dark:hover:text-accent transition-all shadow-sm active:scale-90 flex-shrink-0 flex items-center justify-center focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-accent"
       aria-label="Toggle Theme"
     >
       {theme === 'light' ? <Moon size={18} className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /> : <Sun size={18} className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />}
@@ -402,7 +402,7 @@ const FileUpload = ({
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
           onDrop={onDrop}
-          className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-2xl py-16 px-6 transition-all cursor-pointer group ${isDragging ? 'border-accent bg-accent/5' : 'border-gray-100 dark:border-slate-800/60 bg-gray-50/50 dark:bg-[#1e293b]/30 hover:border-accent dark:hover:border-accent hover:bg-accent/5 dark:hover:bg-accent/5'}`}
+          className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-2xl py-16 px-6 transition-all cursor-pointer group focus-within:ring-2 focus-within:outline-none focus-within:ring-accent ${isDragging ? 'border-accent bg-accent/5' : 'border-gray-100 dark:border-slate-800/60 bg-gray-50/50 dark:bg-[#1e293b]/30 hover:border-accent dark:hover:border-accent hover:bg-accent/5 dark:hover:bg-accent/5'}`}
         >
           <div className={`bg-gray-100 dark:bg-[#1e293b] group-hover:bg-accent/10 p-4 rounded-full mb-4 transition-colors ${isDragging ? 'bg-accent/10 text-accent' : 'text-slate-400 dark:text-slate-500'}`}>
             <Icon size={32} className={isDragging ? 'text-accent' : 'group-hover:text-accent'} />
@@ -413,7 +413,7 @@ const FileUpload = ({
             type="file"
             multiple={multiple}
             accept={accept}
-            className="hidden"
+            className="sr-only"
             onChange={(e) => handleFiles(e.target.files)}
             ref={fileInputRef}
           />

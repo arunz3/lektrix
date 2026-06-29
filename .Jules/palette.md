@@ -1,0 +1,3 @@
+## 2023-10-25 - Custom Dropzone Keyboard Accessibility
+**Learning:** When creating custom drag-and-drop file upload zones that wrap an `<input type="file">`, using `className="hidden"` removes the input from the accessibility tree, making it impossible to focus via keyboard navigation.
+**Action:** Always use `className="sr-only"` on the hidden file input so it remains focusable by screen readers and keyboards. Additionally, apply `focus-within:ring-2 focus-within:outline-none focus-within:ring-accent` to the parent `<label>` element to ensure a visible focus indicator appears when the inner hidden input receives focus.

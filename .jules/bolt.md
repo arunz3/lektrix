@@ -1,0 +1,3 @@
+## 2025-02-20 - Parallelize PDF compression with batched chunking
+**Learning:** Sequential processing in client-side PDF tasks like rendering canvas for multiple pages blocking main thread excessively and takes linear time. But pure `Promise.all()` parallelization can lead to Out-of-Memory (OOM) errors on large PDFs.
+**Action:** Use `Promise.all()` with a limited concurrency chunking approach (e.g., batches of 3-5 pages) to parallelize canvas rendering while preventing OOM crashes, then process the results sequentially to preserve page order.

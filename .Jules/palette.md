@@ -1,0 +1,3 @@
+## 2024-07-01 - Accessible File Dropzones
+**Learning:** Using `className="hidden"` on file inputs inside custom drag-and-drop zones removes them from the accessibility tree, making it impossible for keyboard-only or screen reader users to interact with or focus the dropzone.
+**Action:** Use `className="sr-only"` on the input to keep it in the accessibility tree and visually hidden, and add `focus-within:ring-2 focus-within:outline-none focus-within:ring-accent` to the parent `<label>` to ensure visible focus when the input receives keyboard focus.

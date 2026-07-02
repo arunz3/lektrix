@@ -1,0 +1,3 @@
+## 2024-07-02 - Chunked Parallel Rendering for PDF Compression
+**Learning:** For client-side PDF tasks, parallel canvas rendering (via Promise.all) drastically improves performance. However, attempting to render all pages simultaneously on large PDFs leads to Out-of-Memory (OOM) errors. Chunking the rendering batches (e.g., 3-5 pages at a time) before sequentially combining them preserves both memory limits and correct page order.
+**Action:** Use chunked Promise.all execution instead of fully sequential loops or fully parallel arrays for heavy PDF canvas rendering operations.

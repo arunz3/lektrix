@@ -1,0 +1,4 @@
+## 2025-05-18 - Prevent Client-Side DoS via Unbounded URL.createObjectURL
+**Vulnerability:** The client-side file upload handler mapped over all incoming files to generate preview images using `URL.createObjectURL(file)` *before* checking and slicing the array to the `maxFiles` limit.
+**Learning:** Object URLs consume browser memory, and calling `URL.createObjectURL` on thousands of dropped files simultaneously causes Out-of-Memory (OOM) crashes, leading to a client-side Denial of Service (DoS) vulnerability.
+**Prevention:** Always enforce constraints and slice dynamic input arrays to acceptable limits *before* executing memory-intensive or unbounded native browser APIs like `URL.createObjectURL`.

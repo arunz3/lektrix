@@ -1,0 +1,3 @@
+## 2025-07-03 - Accessible Drag-and-Drop File Inputs
+**Learning:** Hidden inputs (`display: none` or `hidden` class) are removed from the accessibility tree, making custom file upload zones unreachable via keyboard.
+**Action:** For custom drag-and-drop file upload zones wrapping an `<input type="file">`, use `className="sr-only"` instead of `hidden` on the input to keep it in the accessibility tree, and apply `focus-within:ring-2 focus-within:outline-none focus-within:ring-accent` to the parent `<label>` to ensure visible keyboard focus.

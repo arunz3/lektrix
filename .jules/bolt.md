@@ -1,0 +1,3 @@
+## 2024-07-04 - Chunked Parallelization for Client-Side PDF Processing
+**Learning:** Performance optimization for client-side PDF tasks (like compressing or embedding multiple images) can be achieved using `Promise.all()` to parallelize independent asynchronous `pdf-lib` and I/O file operations. However, unbounded parallelization of expensive operations like canvas rendering across large PDFs leads to Out-of-Memory (OOM) errors.
+**Action:** Always implement a limited concurrency approach (e.g., chunking batches of 3-5 pages) when parallelizing heavy operations like rendering, and then process the results sequentially to preserve the original page order.

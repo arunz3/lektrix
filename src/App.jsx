@@ -1051,18 +1051,32 @@ const CompressPDFTool = () => {
       const pdfDoc = await PDFDocument.create();
       if (level === 'high') {
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const viewport = page.getViewport({ scale: 1.5 });
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          canvas.height = viewport.height; canvas.width = viewport.width;
-          await page.render({ canvasContext: context, viewport }).promise;
-          const imgData = canvas.toDataURL('image/jpeg', 0.6);
-          const imgBytes = await fetch(imgData).then(res => res.arrayBuffer());
-          const embeddedImg = await pdfDoc.embedJpg(imgBytes);
-          const newPage = pdfDoc.addPage([viewport.width, viewport.height]);
-          newPage.drawImage(embeddedImg, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+        // Bolt: Chunked parallelization for faster compression while avoiding OOM on large PDFs
+        const CHUNK_SIZE = 3;
+        for (let i = 1; i <= pdf.numPages; i += CHUNK_SIZE) {
+          const chunk = [];
+          for (let j = 0; j < CHUNK_SIZE && i + j <= pdf.numPages; j++) {
+            chunk.push(i + j);
+          }
+
+          const processedChunk = await Promise.all(chunk.map(async (pageNum) => {
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height; canvas.width = viewport.width;
+            await page.render({ canvasContext: context, viewport }).promise;
+            const imgData = canvas.toDataURL('image/jpeg', 0.6);
+            const imgBytes = await fetch(imgData).then(res => res.arrayBuffer());
+            const embeddedImg = await pdfDoc.embedJpg(imgBytes);
+            return { embeddedImg, viewport };
+          }));
+
+          // Process sequentially to preserve order
+          for (const { embeddedImg, viewport } of processedChunk) {
+            const newPage = pdfDoc.addPage([viewport.width, viewport.height]);
+            newPage.drawImage(embeddedImg, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+          }
         }
       } else {
         const copiedPages = await pdfDoc.copyPages(srcDoc, srcDoc.getPageIndices());

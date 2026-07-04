@@ -365,7 +365,15 @@ const FileUpload = ({
   }, []);
 
   const handleFiles = (newFiles) => {
-    const fileList = Array.from(newFiles).map(file => ({
+    let filesToProcess = Array.from(newFiles);
+
+    const limit = multiple
+      ? (maxFiles !== undefined ? Math.max(0, maxFiles - files.length) : Infinity)
+      : 1;
+
+    filesToProcess = filesToProcess.slice(0, limit);
+
+    const fileList = filesToProcess.map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       file: file,
       name: file.name,
@@ -374,10 +382,9 @@ const FileUpload = ({
     }));
 
     if (multiple) {
-      const combined = [...files, ...fileList].slice(0, maxFiles);
-      onFilesChange(combined);
+      onFilesChange([...files, ...fileList]);
     } else {
-      onFilesChange(fileList.slice(0, 1));
+      onFilesChange(fileList);
     }
   };
 

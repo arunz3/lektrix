@@ -1,0 +1,3 @@
+## 2025-05-18 - Chunked Parallelization for Client-Side PDF Generation
+**Learning:** Fully sequential loops for processing individual PDF pages (e.g., rendering to canvas, base64 encoding, embedding) are overly slow. However, using unbounded `Promise.all` across all pages simultaneously easily crashes the browser with Out-of-Memory (OOM) errors due to high RAM spikes.
+**Action:** Always use "chunked parallelization" for client-side PDF tasks. Batch pages into small groups (e.g., concurrency limit of 3-5), process each batch concurrently with `Promise.all`, and then sequentially merge the processed results to preserve order and constrain maximum memory overhead.

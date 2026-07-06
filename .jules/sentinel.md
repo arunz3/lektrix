@@ -1,0 +1,4 @@
+## 2024-05-18 - Prevent Client-Side DoS during Mass File Uploads
+**Vulnerability:** Creating an unbounded number of Object URLs before enforcing file count constraints in file upload components can lead to memory leaks, browser freezes, and client-side Denial of Service (DoS) due to Out-of-Memory (OOM) errors during mass file uploads.
+**Learning:** `URL.createObjectURL` is an expensive operation that allocates memory for a blob in the browser. When processing an array of files, it is crucial to apply limits and slice the array *before* mapping to prevent unnecessary processing and resource allocation for files that will ultimately be discarded by downstream constraints.
+**Prevention:** Always enforce constraints (e.g., `maxFiles`) by calculating the remaining capacity and slicing the incoming file array *before* executing expensive operations like `URL.createObjectURL` on its items.

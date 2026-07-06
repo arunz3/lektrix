@@ -1,0 +1,3 @@
+## 2025-02-19 - Keyboard Accessibility for File Upload Zones
+**Learning:** When using custom drag-and-drop file upload zones that wrap an `<input type="file">`, using `hidden` removes the input from the accessibility tree, breaking keyboard focus. Using `sr-only` keeps it accessible. However, because the input is visually hidden, you must apply `focus-within` styles to the parent wrapper (like the `<label>`) to ensure the focus state is visible to sighted keyboard users.
+**Action:** Use `className="sr-only"` on hidden file inputs and `focus-within:ring-2 focus-within:outline-none focus-within:ring-accent` on their wrapping `<label>` containers.

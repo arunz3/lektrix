@@ -1,0 +1,3 @@
+## 2024-07-06 - Chunked Parallel Rendering for PDF Conversion
+**Learning:** Forcing synchronous JS decoding (like sequentially rendering pages via `page.render()` one by one) is a major performance bottleneck for client-side PDF tasks. However, launching all pages simultaneously in `Promise.all()` causes Out-of-Memory (OOM) errors on large documents due to heavy canvas rendering.
+**Action:** Use chunked batching (e.g., concurrency of 3-5) with `Promise.all()` to parallelize asynchronous `pdf-lib` and canvas operations. This preserves speed by keeping the main thread free, but controls memory usage, sequentially processing the results to preserve order.

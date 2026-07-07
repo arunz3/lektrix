@@ -1051,18 +1051,32 @@ const CompressPDFTool = () => {
       const pdfDoc = await PDFDocument.create();
       if (level === 'high') {
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const viewport = page.getViewport({ scale: 1.5 });
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          canvas.height = viewport.height; canvas.width = viewport.width;
-          await page.render({ canvasContext: context, viewport }).promise;
-          const imgData = canvas.toDataURL('image/jpeg', 0.6);
-          const imgBytes = await fetch(imgData).then(res => res.arrayBuffer());
-          const embeddedImg = await pdfDoc.embedJpg(imgBytes);
-          const newPage = pdfDoc.addPage([viewport.width, viewport.height]);
-          newPage.drawImage(embeddedImg, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+        // Bolt: Batch render pages in chunks of 3 for safe parallelization (prevent OOM)
+        for (let i = 1; i <= pdf.numPages; i += 3) {
+          const batch = [];
+          for (let j = 0; j < 3 && i + j <= pdf.numPages; j++) {
+            batch.push(i + j);
+          }
+          const batchResults = await Promise.all(batch.map(async (pageNum) => {
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height; canvas.width = viewport.width;
+            await page.render({ canvasContext: context, viewport }).promise;
+            const imgData = canvas.toDataURL('image/jpeg', 0.6);
+            return {
+              imgBytes: await fetch(imgData).then(res => res.arrayBuffer()),
+              width: viewport.width,
+              height: viewport.height
+            };
+          }));
+
+          for (const res of batchResults) {
+            const embeddedImg = await pdfDoc.embedJpg(res.imgBytes);
+            const newPage = pdfDoc.addPage([res.width, res.height]);
+            newPage.drawImage(embeddedImg, { x: 0, y: 0, width: res.width, height: res.height });
+          }
         }
       } else {
         const copiedPages = await pdfDoc.copyPages(srcDoc, srcDoc.getPageIndices());
@@ -1716,15 +1730,27 @@ const PDFToImageTool = () => {
       const arrayBuffer = await files[0].file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       const zip = new JSZip();
-      for (const idx of Array.from(selectedPages).sort((a, b) => a - b)) {
-        const page = await pdf.getPage(idx + 1);
-        const viewport = page.getViewport({ scale: 2 });
-        const canvas = document.createElement('canvas'); const context = canvas.getContext('2d');
-        canvas.height = viewport.height; canvas.width = viewport.width;
-        await page.render({ canvasContext: context, viewport }).promise;
-        const type = format === 'png' ? 'image/png' : 'image/jpeg';
-        const imgData = canvas.toDataURL(type, quality).split(',')[1];
-        zip.file(`page-${idx + 1}.${format}`, imgData, { base64: true });
+      const sortedPages = Array.from(selectedPages).sort((a, b) => a - b);
+
+      // Bolt: Batch render pages in chunks of 3 for safe parallelization (prevent OOM)
+      for (let i = 0; i < sortedPages.length; i += 3) {
+        const batch = sortedPages.slice(i, i + 3);
+        const batchResults = await Promise.all(batch.map(async (idx) => {
+          const page = await pdf.getPage(idx + 1);
+          const viewport = page.getViewport({ scale: 2 });
+          const canvas = document.createElement('canvas'); const context = canvas.getContext('2d');
+          canvas.height = viewport.height; canvas.width = viewport.width;
+          await page.render({ canvasContext: context, viewport }).promise;
+          const type = format === 'png' ? 'image/png' : 'image/jpeg';
+          return {
+            idx,
+            imgData: canvas.toDataURL(type, quality).split(',')[1]
+          };
+        }));
+
+        for (const res of batchResults) {
+          zip.file(`page-${res.idx + 1}.${format}`, res.imgData, { base64: true });
+        }
       }
       setResultUrl(URL.createObjectURL(await zip.generateAsync({ type: 'blob' })));
       setStatus('success');

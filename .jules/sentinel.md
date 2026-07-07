@@ -1,0 +1,4 @@
+## 2025-02-14 - Prevent Client-Side DoS via Massive File Upload Processing
+**Vulnerability:** The application was iterating over the entire incoming array of files from a dropzone and generating a memory-intensive `URL.createObjectURL(file)` for every file before subsequently slicing the array to enforce the `maxFiles` limit. Dropping thousands of files simultaneously could crash the browser.
+**Learning:** For client-side uploads, any filtering, slicing, or limit constraint must be applied *before* any resource-intensive DOM/memory allocations (like Object URL generation) occur to prevent Out-of-Memory exceptions and denial of service.
+**Prevention:** Always enforce dynamic sizing limits (e.g., `Math.max(0, maxFiles - currentFiles.length)`) on arrays upfront before executing `.map()` iterations that spawn blobs or Object URLs.

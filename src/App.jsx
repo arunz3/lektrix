@@ -365,8 +365,17 @@ const FileUpload = ({
   }, []);
 
   const handleFiles = (newFiles) => {
-    const fileList = Array.from(newFiles).map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
+    // SECURITY FIX: Calculate the limit to prevent DoS / Out-of-Memory from massive file drops
+    // Ensure we don't attempt to create 10,000+ Object URLs if the user selects huge amount of files.
+    const allowedLimit = multiple
+      ? (maxFiles !== undefined ? Math.max(0, maxFiles - files.length) : Infinity)
+      : 1;
+
+    // Slice the incoming array *before* mapping to ObjectURLs to avoid memory exhaustion
+    const slicedFiles = Array.from(newFiles).slice(0, allowedLimit);
+
+    const fileList = slicedFiles.map(file => ({
+      id: (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : Math.random().toString(36).substring(2, 9),
       file: file,
       name: file.name,
       size: formatSize(file.size),
@@ -374,10 +383,9 @@ const FileUpload = ({
     }));
 
     if (multiple) {
-      const combined = [...files, ...fileList].slice(0, maxFiles);
-      onFilesChange(combined);
+      onFilesChange([...files, ...fileList]);
     } else {
-      onFilesChange(fileList.slice(0, 1));
+      onFilesChange(fileList);
     }
   };
 
